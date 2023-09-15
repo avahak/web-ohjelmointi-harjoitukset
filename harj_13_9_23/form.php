@@ -19,6 +19,8 @@ $field_names = ["title" => "title",
     "rating" => "rating", 
     "cb" => "special features"];
 
+// Used to replace generic client-side validation error 
+// with a more specific server-side validation error
 function custom_feedback($field) {
     global $field_names;
     global $is_invalid_list;
