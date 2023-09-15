@@ -183,17 +183,14 @@ if ($result['success']) {
                     // onko duplikaatti?
                     $stmt = "SELECT * FROM film WHERE title=? AND release_year=? AND language_id=?";
                     $result = substitute_and_execute($conn, $stmt, $title, $release_year, $language);
-                    $count = 0;
-                    if ($result['success'])
-                        $count = mysqli_num_rows($result['value']);
-                    if ($count === 0) {
+                    $count = $result['success'] ? mysqli_num_rows($result['value']) : 0;
+                    if ($count == 0) {
                         // yritä lisätä tietokantaan:
                         $stmt = "INSERT INTO film (title, description, release_year, language_id, rental_rate, rental_duration, replacement_cost, length, rating, special_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $result = substitute_and_execute($conn, $stmt, $title, $description, $release_year, $language, $rental_rate, $rental_duration, $cost, $length, $rating, $sf_string);
                         if ($result['success']) { 
                             foreach (["title", "description", "release_year", "language", "rental_rate", "rental_duration", "cost", "length", "rating", "cb"] as $field)
                                 unset($_POST[$field]);      // start the form fresh
-                            // no need to do anything here
                         } else {
                             // uusi puute: INSERT epäonnistui
                             $puutteet[] = "INSERT INTO error: " . $result['value'];
