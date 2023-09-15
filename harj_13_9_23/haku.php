@@ -121,12 +121,12 @@ $conn->close();
                         foreach ($movies as $key => $value) {
                             echo "<tr>";
                             echo "<td>" . ($key+1) . "</td>";
-                            echo "<td>" . $value[0] . "</td>";
-                            echo "<td>" . $value[1] . "</td>";
-                            echo "<td>" . $value[2] . "</td>";
-                            echo "<td>" . $value[3] . "</td>";
-                            echo "<td>" . $value[4] . "</td>";
-                            echo "<td>" . $value[4] . "</td>";
+                            echo "<td>" . sanitize_for_html($value[0]) . "</td>";
+                            echo "<td>" . sanitize_for_html($value[1]) . "</td>";
+                            echo "<td>" . sanitize_for_html($value[2]) . "</td>";
+                            echo "<td>" . sanitize_for_html($value[3]) . "</td>";
+                            echo "<td>" . sanitize_for_html($value[4]) . "</td>";
+                            echo "<td>" . sanitize_for_html($value[4]) . "</td>";
                             echo "</tr>";
                         }
                     ?>
