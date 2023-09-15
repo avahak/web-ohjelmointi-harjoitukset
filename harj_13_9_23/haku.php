@@ -71,7 +71,7 @@ $conn->close();
                         <input type="text" class="form-control" name="name" placeholder="Enter movie name" 
                             <?php 
                             if (isset($_POST['genre'])) {
-                                echo " value=\"" . ($_POST['name']) . "\"";
+                                echo " value=\"" . sanitize_for_html($_POST['name']) . "\"";
                             }
                             ?>
                             >
