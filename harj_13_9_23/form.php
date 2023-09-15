@@ -103,7 +103,7 @@ if ($result['status']) {
 
                 function validateNumeric($x) {
                     if (!is_numeric($x))
-                        return "not numeric $x";
+                        return "not numeric";
                     if ($x >= 10000)
                         return "too big";
                     if ($x < 0)
