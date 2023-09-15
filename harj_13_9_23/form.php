@@ -8,11 +8,28 @@ function recall($name) {
     return isset($_POST[$name]) ? $_POST[$name] : "";
 }
 
+$field_names = ["title" => "title", 
+    "description" => "description", 
+    "release_year" => "release year", 
+    "language" => "language", 
+    "rental_rate" => "rental rate", 
+    "rental_duration" => "rental duration", 
+    "cost" => "replacement cost", 
+    "length" => "length", 
+    "rating" => "rating", 
+    "cb" => "special features"];
+
+function custom_feedback($field) {
+    global $field_names;
+    global $is_invalid_list;
+    if (array_key_exists($field, $is_invalid_list))
+        echo "Invalid " . $field_names[$field] . ": " . $is_invalid_list[$field] . ".";
+}
+
 $is_invalid_list = [];
 $word_blacklist = ["hitto", "harmi", "pahus", "pentele", "kurja"];
 
 // Used to extract all possible values of ENUM or SET from a field
-// bit janky, there must be a better way
 function extract_range($conn, $table, $field) {
     // cannot use substitution with table or field names so just use plain old:
     $stmt = "SHOW COLUMNS FROM $table WHERE Field='$field'";
@@ -78,16 +95,30 @@ if ($result['status']) {
                     global $word_blacklist;
                     foreach ($word_blacklist as $word) 
                         if (strpos(strtolower($x), $word) !== false)
-                            return false;   // $x contains naughty word
-                    return (strlen($x) > 0);
+                            return "inappropriate language";   // $x contains naughty word
+                    if (strlen($x) == 0)
+                        return "empty field";
+                    return "";
                 }
 
                 function validateNumeric($x) {
-                    return is_numeric($x) && ($x < 10000);
+                    if (!is_numeric($x))
+                        return "not numeric $x";
+                    if ($x >= 10000)
+                        return "too big";
+                    if ($x < 0)
+                        return "negative value";
+                    return "";
                 }
 
                 function validateYear($x) {
-                    return ctype_digit($x) && ($x >= 1901) && ($x <= 2155);
+                    if (!ctype_digit($x))
+                        return "not numeric";
+                    if ($x <= 1900)
+                        return "too low";
+                    if ($x > 2155)
+                        return "too high";
+                    return "";
                 }
 
                 $title = $_POST["title"];
@@ -99,7 +130,7 @@ if ($result['status']) {
                 $cost = $_POST["cost"];
                 $length = $_POST["length"];
                 $rating = $ratings[$_POST["rating"]];
-                $cb = $_POST["cb"];
+                $cb = isset($_POST["cb"]) ? $_POST["cb"] : [];
 
                 // print_r($cb);
                 // echo "<br>";
@@ -129,41 +160,22 @@ if ($result['status']) {
                 $is_invalid_list = [];
                 // Server-side validation:
                 $puutteet = [];      // lista löydetyistä puutteista formissa
-                if (!validateText($title)) {
-                    $puutteet[] = "Invalid title.";
-                    $is_invalid_list[] = "title";
-                }
-                if (!validateText($description)) {
-                    $puutteet[] = "Invalid description.";
-                    $is_invalid_list[] = "description";
-                }
-                if (!validateYear($release_year)) {
-                    $puutteet[] = "Invalid release year.";
-                    $is_invalid_list[] = "release_year";
-                }
-                if (!validateNumeric($language)) {
-                    $puutteet[] = "Invalid language.";
-                    $is_invalid_list[] = "language";
-                }
-                if (!validateNumeric($rental_rate)) {
-                    $puutteet[] = "Invalid rental rate.";
-                    $is_invalid_list[] = "rental_rate";
-                }
-                if (!validateNumeric($rental_duration)) {
-                    $puutteet[] = "Invalid rental duration.";
-                    $is_invalid_list[] = "rental_duration";
-                }
-                if (!validateNumeric($cost)) {
-                    $puutteet[] = "Invalid cost.";
-                    $is_invalid_list[] = "cost";
-                }
-                if (!validateNumeric($length)) {
-                    $puutteet[] = "Invalid length.";
-                    $is_invalid_list[] = "length";
-                }
-                if (!validateText($rating)) {
-                    $puutteet[] = "Invalid rating.";
-                    $is_invalid_list[] = "rating";
+
+                $validate_methods = ["title" => "validateText", 
+                    "description" => "validateText", 
+                    "release_year" => "validateYear",
+                    "language" => "validateNumeric",
+                    "rental_rate" => "validateNumeric",
+                    "rental_duration" => "validateNumeric",
+                    "cost" => "validateNumeric",
+                    "length" => "validateNumeric",
+                    "rating" => "validateText"];
+                foreach ($validate_methods as $key => $value) {
+                    $result = call_user_func($value, $_POST[$key]);
+                    if ($result != "") {
+                        $puutteet[] = "Invalid " . $field_names[$key] . ": " . $result;
+                        $is_invalid_list[$key] = $result;
+                    }
                 }
 
                 if (!$puutteet) {
@@ -175,14 +187,13 @@ if ($result['status']) {
                     if ($result['status'])
                         $count = mysqli_num_rows($result['value']);
                     if ($count === 0) {
-                    // yritä lisätä tietokantaan:
+                        // yritä lisätä tietokantaan:
                         $stmt = "INSERT INTO film (title, description, release_year, language_id, rental_rate, rental_duration, replacement_cost, length, rating, special_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $result = substitute_and_execute($conn, $stmt, $title, $description, $release_year, $language, $rental_rate, $rental_duration, $cost, $length, $rating, $sf_string);
                         if ($result['status']) { 
                             foreach (["title", "description", "release_year", "language", "rental_rate", "rental_duration", "cost", "length", "rating", "cb"] as $field)
                                 unset($_POST[$field]);      // start the form fresh
                             // no need to do anything here
-                            // echo "INSERT OK!";
                         } else {
                             // uusi puute: INSERT epäonnistui
                             $puutteet[] = "INSERT INTO error: " . $result['value'];
@@ -220,18 +231,18 @@ if ($result['status']) {
                 <?php $field = "title"; ?>
                 <div class="row mb-3">
                     <label for="title" class="form-label">Title:</label>
-                    <input type="text" class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="title" name="title" placeholder="Title of the film" required <?php echo "value=\"" . recall($field) . "\"" ?>>
-                    <div class="invalid-feedback">
-                        Valid title is required.
+                    <input type="text" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="title" name="title" placeholder="Title of the film" required <?php echo "value=\"" . recall($field) . "\"" ?>>
+                    <div class="invalid-feedback" id="title-feedback" data-default="Valid title is required.">
+                        <?php custom_feedback($field); ?>
                     </div>
                 </div>
 
                 <?php $field = "description"; ?>
                 <div class="row mb-3">
                     <label for="description" class="form-label">Description:</label>
-                    <textarea class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="description" name="description" placeholder="Description" required rows="3"><?php echo recall($field); ?></textarea>
-                    <div class="invalid-feedback">
-                        Valid description is required.
+                    <textarea class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="description" name="description" placeholder="Description" required rows="3"><?php echo recall($field); ?></textarea>
+                    <div class="invalid-feedback" id="description-feedback" data-default="Valid description is required.">
+                        <?php custom_feedback($field); ?>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -239,16 +250,19 @@ if ($result['status']) {
                     <?php $field = "release_year"; ?>
                     <div class="col-sm-6">
                         <label for="release_year" class="form-label">Release year:</label>
-                        <input type="number" class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="release_year" name="release_year" placeholder="Release year" required min="1900" <?php echo "value=\"" . recall($field) . "\"" ?>>
-                        <div class="invalid-feedback">
-                            Valid year is required.
+                        <input type="number" class="form-control 
+                            <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>
+                            " id="release_year" name="release_year" placeholder="Release year" 
+                            required min="1900" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <div class="invalid-feedback" id="release_year-feedback" data-default="Valid release year is required.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
 
                     <?php $field = "language"; ?>
                     <div class="col-sm-6">
                         <label for="language" class="form-label">Language:</label>
-                        <select class="form-select selectpicker <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="language" name="language" required>
+                        <select class="form-select selectpicker <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="language" name="language" required>
                             <option value="" disabled selected>Select language</option>
                             <?php 
                                 foreach ($languages as $key => $value) {
@@ -258,8 +272,8 @@ if ($result['status']) {
                                 }
                             ?>
                         </select>
-                        <div class="invalid-feedback">
-                            Select a language.
+                        <div class="invalid-feedback" id="language-feedback" data-default="Select a language.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
                 </div>
@@ -268,18 +282,18 @@ if ($result['status']) {
                     <?php $field = "rental_rate"; ?>
                     <div class="col-sm-6">
                         <label for="rental_rate" class="form-label">Rental rate:</label>
-                        <input type="number" step="0.01" class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rental_rate" name="rental_rate" placeholder="Rental rate" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
-                        <div class="invalid-feedback">
-                            Valid rental rate is required.
+                        <input type="number" step="0.01" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rental_rate" name="rental_rate" placeholder="Rental rate" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <div class="invalid-feedback" id="rental_rate-feedback" data-default="Valid rental rate is required.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
                     
                     <?php $field = "rental_duration"; ?>
                     <div class="col-sm-6">
                         <label for="rental_duration" class="form-label">Rental duration:</label>
-                        <input type="number" class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rental_duration" name="rental_duration" placeholder="Rental duration" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
-                        <div class="invalid-feedback">
-                            Rental duration is required.
+                        <input type="number" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rental_duration" name="rental_duration" placeholder="Rental duration" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <div class="invalid-feedback" id="rental_duration-feedback" data-default="Rental duration is required.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
                 </div>
@@ -287,18 +301,18 @@ if ($result['status']) {
                     <?php $field = "cost"; ?>
                     <div class="col-sm-6">
                         <label for="cost" class="form-label">Replacement cost:</label>
-                        <input type="number" step="0.01" class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="cost" name="cost" placeholder="Replacement cost" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
-                        <div class="invalid-feedback">
-                            Valid replacement cost is required.
+                        <input type="number" step="0.01" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="cost" name="cost" placeholder="Replacement cost" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <div class="invalid-feedback" id="cost-feedback" data-default="Valid replacement cost is required.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
                     
                     <?php $field = "length"; ?>
                     <div class="col-sm-6">
                         <label for="length" class="form-label">Length:</label>
-                        <input type="number" class="form-control <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="length" name="length" placeholder="Length" required min="0" max="10000" <?php echo "value=\"" . recall($field) . "\"" ?>>
-                        <div class="invalid-feedback">
-                            Valid length is required.
+                        <input type="number" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="length" name="length" placeholder="Length" required min="0" max="10000" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <div class="invalid-feedback" id="length-feedback" data-default="Valid length is required.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
                 </div>
@@ -306,7 +320,7 @@ if ($result['status']) {
                     <?php $field = "rating"; ?>
                     <div class="col-12 col-sm-4">
                         <label for="rating" class="form-label">Rating:</label>
-                        <select class="form-select selectpicker <?php echo (in_array($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rating" name="rating" required>
+                        <select class="form-select selectpicker <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rating" name="rating" required>
                             <option value="" disabled selected>All ratings</option>
                             <?php 
                                 foreach ($ratings as $key => $value) {
@@ -316,8 +330,8 @@ if ($result['status']) {
                                 }
                             ?>
                         </select>
-                        <div class="invalid-feedback">
-                            Valid rating is required.
+                        <div class="invalid-feedback" id="rating-feedback" data-default="Valid rating is required.">
+                            <?php custom_feedback($field); ?>
                         </div>
                     </div>
 
@@ -336,16 +350,13 @@ if ($result['status']) {
                                     $k++;
                                 }
                             ?>
-                            <!-- <div class="col-4"></div> -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Lähetyspainike -->
+                <!-- Submit -->
                 <button type="submit" name="submit" id="submit" class="btn btn-primary btn-lg">Submit</button>
-                <!-- lisää btn-lg -->
             </form>
-            <!-- Lomake päättyy tässä -->
         </div>
     </div>
 </body>
