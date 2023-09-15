@@ -2,10 +2,10 @@
 
 // Usage: 
 //     $db = "database name here"
-//     require "(...)/sql_config.php"; // this defines SERVER, USERNAME, PASSWORD
+//     require "(correct path here)/sql_connect.php";
 //     use $conn and optionally substitute_and_execute for sql statements
 
-require "config/sql_config.php";
+require "config/sql_config.php";    // this defines SERVER, USERNAME, PASSWORD
 
 $conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
 
