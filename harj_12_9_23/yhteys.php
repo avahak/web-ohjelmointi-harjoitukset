@@ -9,8 +9,8 @@ require "../sql_connect.php";
 
 // apufunktio, hakee hetun (Henkilo pääavain) nimen perusteella
 function hae_hetu($conn, $nimi) {
-    $stmt = "SELECT hetu FROM Henkilo WHERE nimi=\"$nimi\"";
-    $result = substitute_and_execute($conn, $stmt);
+    $stmt = "SELECT hetu FROM Henkilo WHERE nimi=?";
+    $result = substitute_and_execute($conn, $stmt, $nimi);
     $row = $result['value']->fetch_assoc();
     if ($row)
         return $row["hetu"];
