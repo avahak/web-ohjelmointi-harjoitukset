@@ -1,7 +1,7 @@
 <?php
 
 $db = "sakila";
-require "../config/sql_connect.php";
+require "../sql_connect.php";
 
 // find $genres:
 $stmt = 'SELECT category_id, name FROM category ORDER BY name';

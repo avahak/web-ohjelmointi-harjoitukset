@@ -1,7 +1,7 @@
 <?php
 
 $db = "autokanta";
-require "../config/sql_connect.php";
+require "../sql_connect.php";
 
 // Henkilo: (hetu, nimi, osoite, puhelinnumero)
 // Ajoneuvo: (rekisterinro, vari, vuosimalli, omistaja)

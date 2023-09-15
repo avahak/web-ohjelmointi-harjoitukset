@@ -1,7 +1,7 @@
 <?php
 
 $db = "sakila";
-require "../config/sql_connect.php";
+require "../sql_connect.php";
 
 // form data retention helper function:
 function recall($name) {
