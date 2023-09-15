@@ -35,7 +35,7 @@ function extract_range($conn, $table, $field) {
     $stmt = "SHOW COLUMNS FROM $table WHERE Field='$field'";
     $result = substitute_and_execute($conn, $stmt);
     $range = [];
-    if ($result['status']) { 
+    if ($result['success']) { 
         $cleaner_pattern = '/\'([^\']*)\'/';   // matches content that starts and ends with '
         $row = $result['value']->fetch_assoc();
         $dirty_range = explode(",", $row['Type']);
@@ -57,7 +57,7 @@ $special_features = extract_range($conn, "film", "special_features");
 $stmt = 'SELECT language_id, name FROM language';
 $result = substitute_and_execute($conn, $stmt);
 $languages = [];
-if ($result['status']) { 
+if ($result['success']) { 
     foreach ($result['value'] as $row) 
         $languages[$row['language_id']] = $row['name'];
 } else {
@@ -184,13 +184,13 @@ if ($result['status']) {
                     $stmt = "SELECT * FROM film WHERE title=? AND release_year=? AND language_id=?";
                     $result = substitute_and_execute($conn, $stmt, $title, $release_year, $language);
                     $count = 0;
-                    if ($result['status'])
+                    if ($result['success'])
                         $count = mysqli_num_rows($result['value']);
                     if ($count === 0) {
                         // yritä lisätä tietokantaan:
                         $stmt = "INSERT INTO film (title, description, release_year, language_id, rental_rate, rental_duration, replacement_cost, length, rating, special_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $result = substitute_and_execute($conn, $stmt, $title, $description, $release_year, $language, $rental_rate, $rental_duration, $cost, $length, $rating, $sf_string);
-                        if ($result['status']) { 
+                        if ($result['success']) { 
                             foreach (["title", "description", "release_year", "language", "rental_rate", "rental_duration", "cost", "length", "rating", "cb"] as $field)
                                 unset($_POST[$field]);      // start the form fresh
                             // no need to do anything here

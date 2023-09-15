@@ -21,7 +21,7 @@ function instruct($conn, $stmt) {
     echo "Attempting to execute: <span style='color:#900;font-weight:bold;font-family:monospace'>$stmt</span>";
     $result = substitute_and_execute($conn, $stmt);
     echo "<br>";
-    if ($result['status']) { 
+    if ($result['success']) { 
         if ($result['value'])
             echo "Result: " . $result['value'];
         else

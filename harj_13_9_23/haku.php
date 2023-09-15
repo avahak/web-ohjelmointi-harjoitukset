@@ -7,7 +7,7 @@ require "../sql_connect.php";
 $stmt = 'SELECT category_id, name FROM category ORDER BY name';
 $result = substitute_and_execute($conn, $stmt);
 $genres = [];
-if ($result['status']) { 
+if ($result['success']) { 
     foreach ($result['value'] as $row) 
         $genres[$row['category_id']] = $row['name'];
 } else {
@@ -38,7 +38,7 @@ if (isset($_POST["name"]) && isset($_POST["genre"])) {
     $params[1] = $stmt;
     $result = call_user_func_array("substitute_and_execute", $params);
 
-    if ($result['status']) { 
+    if ($result['success']) { 
         foreach ($result['value'] as $row) 
             $movies[] = [$row['title'], $row['name'], $row['description'], $row['release_year'], $row['length'], $row['rating']];
         // echo "Results: " . count($movies) . "<br>";
