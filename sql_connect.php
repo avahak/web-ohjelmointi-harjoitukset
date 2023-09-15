@@ -2,7 +2,7 @@
 
 // Usage: 
 //     $db = "database name here"
-//     require "(correct path here)/sql_connect.php";
+//     require "(path to this file here)/sql_connect.php";
 //     use $conn and optionally substitute_and_execute for sql statements
 
 require "config/sql_config.php";    // this defines SERVER, USERNAME, PASSWORD
