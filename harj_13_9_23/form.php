@@ -14,7 +14,7 @@ function recall($name) {
 // used to add attributes for bootstrap to tell which inputs failed server-side validation
 function add_validation_attribute($field) {
     global $is_invalid_list;
-    if (empty($is_invalid_list))    // form is fresh - do not anything
+    if (empty($is_invalid_list))    // form is fresh - do nothing
         return;
     echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : "is-valid");
     return;
@@ -62,7 +62,7 @@ $field_names = ["title" => "title",
 // list of input field names that fail server side validation:
 $is_invalid_list = [];
 
-// list of blacklisted words just to demo one possible way of text validation:
+// list of blacklisted words just to explore one possible way of text validation:
 $word_blacklist = ["hitto", "harmi", "pahus", "pentele", "kurja"];
 
 // extract $ratings:
@@ -105,12 +105,12 @@ if ($result['success']) {
 <body>
     <div class="container mt-2 p-auto">
         <?php
-            // Tässä saadaan form data POST-metodilla ja se tulee tarkistaa 
-            // (server side validation) ja jos menee läpi niin yrittää lisätä tietokantaan
+            // Here we get form POST data and it should be checked  (server side validation) 
+            // and if everything is ok we add the film to the database
 
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-                // [there should be custom validation functions for every input field that require it coded here]
+                // code validation functions here for all the input fields that need it
 
                 function validateText($x) {
                     global $word_blacklist;
@@ -143,6 +143,7 @@ if ($result['success']) {
                     return "";
                 }
 
+                // obtain the POST data:
                 $title = recall("title");
                 $description = recall("description");
                 $release_year = recall("release_year");
@@ -180,10 +181,12 @@ if ($result['success']) {
                 
                 // Server-side validation:
 
-                $flaws = [];            // list of flaws found on the form
+                // list of flaws found on the form:
+                $flaws = [];
+
                 $is_invalid_list = [];
 
-                // attach a validation function to each input that needs validation
+                // attach a validation function to each input that needs validation:
                 $validate_methods = ["title" => "validateText", 
                     "description" => "validateText", 
                     "release_year" => "validateYear",
@@ -209,7 +212,7 @@ if ($result['success']) {
                     $result = substitute_and_execute($conn, $stmt, $title, $release_year, $language);
                     $count = $result['success'] ? mysqli_num_rows($result['value']) : 0;
                     if ($count == 0) {
-                        // try to insert film into database:
+                        // no film found: try to insert film into database:
                         $stmt = "INSERT INTO film (title, description, release_year, language_id, rental_rate, rental_duration, replacement_cost, length, rating, special_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $result = substitute_and_execute($conn, $stmt, $title, $description, $release_year, $language, $rental_rate, $rental_duration, $cost, $length, $rating, $sf_string);
                         if ($result['success']) { 
@@ -245,7 +248,7 @@ if ($result['success']) {
                 }
             }
         ?>
-        
+
         <div class="row m-2">
             <h1>Add new film <?php if (DEBUG_MODE) echo "[DEBUG MODE]"; ?></h1>
             <!-- form starts here -->
