@@ -198,11 +198,11 @@ if ($result['success']) {
                     "rating" => "validateText"];
                 // run the validation functions and keep track of problems 
                 // in $flaws and $is_invalid_list
-                foreach ($validate_methods as $key => $value) {
-                    $result = call_user_func($value, $_POST[$key]);
+                foreach ($validate_methods as $name => $fn) {
+                    $result = call_user_func($fn, $_POST[$name]);
                     if ($result != "") {
-                        $flaws[] = "Invalid " . $field_names[$key] . ": " . $result;
-                        $is_invalid_list[$key] = $result;
+                        $flaws[] = "Invalid " . $field_names[$name] . ": " . $result;
+                        $is_invalid_list[$name] = $result;
                     }
                 }
 
