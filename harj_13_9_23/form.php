@@ -199,7 +199,7 @@ if ($result['success']) {
                 // run the validation functions and keep track of problems 
                 // in $flaws and $is_invalid_list
                 foreach ($validate_methods as $name => $fn) {
-                    $result = call_user_func($fn, $_POST[$name]);
+                    $result = call_user_func($fn, recall($name));
                     if ($result != "") {
                         $flaws[] = "Invalid " . $field_names[$name] . ": " . $result;
                         $is_invalid_list[$name] = $result;
