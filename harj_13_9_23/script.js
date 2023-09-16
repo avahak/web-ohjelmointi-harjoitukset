@@ -1,17 +1,14 @@
-// Lisää JavaScript-koodi tähän
 document.addEventListener("DOMContentLoaded", function () {
     var form = document.getElementById("film_form");
 
 
-    // Move .invalid-feedback divs data-default into div itself:
-    // Get all elements with the class "invalid-feedback"
+    // Move .invalid-feedback divs data-default into div itself
     const divs = document.querySelectorAll('.invalid-feedback');
-    // Iterate through the elements and set their content to data-default
     divs.forEach(function(div) {
         const defaultValue = div.getAttribute('data-default');
-        if (div.textContent.trim() === '') {
+        // if there is no text then set it to data-default
+        if (div.textContent.trim() === '') 
             div.textContent = defaultValue;
-        }
     });
 
     form.addEventListener("submit", function (event) {
@@ -19,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             event.stopPropagation();
         }
-
         form.classList.add("was-validated");
     });
 
@@ -36,11 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     close.click();
             });
 
-            // if (input.checkValidity()) {
-            input.classList.remove("is-invalid");
-            // } else {
-            //     input.classList.add("is-invalid");
-            // }
+            if (input.checkValidity()) 
+                input.classList.remove("is-invalid");
+            else 
+                input.classList.add("is-invalid");
 
             // reset feedback back to default:
             let id = input.getAttribute('id');
