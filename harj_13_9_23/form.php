@@ -3,21 +3,22 @@
 $db = "sakila";
 require "../sql_connect.php";
 
+// use this to output some extra info for debugging:
+define('DEBUG_MODE', 0);
+
 // form data retention helper function:
 function recall($name) {
     return isset($_POST[$name]) ? $_POST[$name] : "";
 }
 
-$field_names = ["title" => "title", 
-    "description" => "description", 
-    "release_year" => "release year", 
-    "language" => "language", 
-    "rental_rate" => "rental rate", 
-    "rental_duration" => "rental duration", 
-    "cost" => "replacement cost", 
-    "length" => "length", 
-    "rating" => "rating", 
-    "cb" => "special features"];
+// used to add attributes for bootstrap to tell which inputs failed server-side validation
+function add_validation_attribute($field) {
+    global $is_invalid_list;
+    if (empty($is_invalid_list))    // form is fresh - do not anything
+        return;
+    echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : "is-valid");
+    return;
+}
 
 // Used to replace generic client-side validation error 
 // with a more specific server-side validation error
@@ -27,9 +28,6 @@ function custom_feedback($field) {
     if (array_key_exists($field, $is_invalid_list))
         echo "Invalid " . $field_names[$field] . ": " . $is_invalid_list[$field] . ".";
 }
-
-$is_invalid_list = [];
-$word_blacklist = ["hitto", "harmi", "pahus", "pentele", "kurja"];
 
 // Used to extract all possible values of ENUM or SET from a field
 function extract_range($conn, $table, $field) {
@@ -49,13 +47,31 @@ function extract_range($conn, $table, $field) {
     return $range;
 }
 
+// associate a text description for each input field name:
+$field_names = ["title" => "title", 
+    "description" => "description", 
+    "release_year" => "release year", 
+    "language" => "language", 
+    "rental_rate" => "rental rate", 
+    "rental_duration" => "rental duration", 
+    "cost" => "replacement cost", 
+    "length" => "length", 
+    "rating" => "rating", 
+    "cb" => "special features"];
+
+// list of input field names that fail server side validation:
+$is_invalid_list = [];
+
+// list of blacklisted words just to demo one possible way of text validation:
+$word_blacklist = ["hitto", "harmi", "pahus", "pentele", "kurja"];
+
 // extract $ratings:
 $ratings = extract_range($conn, "film", "rating");
 
 // extract $special_features:
 $special_features = extract_range($conn, "film", "special_features");
 
-// find $languages:
+// find languages and store it as $languages with elements language_id=>name:
 $stmt = 'SELECT language_id, name FROM language';
 $result = substitute_and_execute($conn, $stmt);
 $languages = [];
@@ -90,14 +106,17 @@ if ($result['success']) {
     <div class="container mt-2 p-auto">
         <?php
             // Tässä saadaan form data POST-metodilla ja se tulee tarkistaa 
-            // (server side validation) ja tehdä jotain riippuen siitä meneekö tarkistus läpi.
+            // (server side validation) ja jos menee läpi niin yrittää lisätä tietokantaan
 
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+                // [there should be custom validation functions for every input field that require it coded here]
+
                 function validateText($x) {
                     global $word_blacklist;
                     foreach ($word_blacklist as $word) 
                         if (strpos(strtolower($x), $word) !== false)
-                            return "inappropriate language";   // $x contains naughty word
+                            return "inappropriate language";   // $x contains blacklisted word
                     if (strlen($x) == 0)
                         return "empty field";
                     return "";
@@ -107,43 +126,43 @@ if ($result['success']) {
                     if (!is_numeric($x))
                         return "not numeric";
                     if ($x >= 10000)
-                        return "too big";
+                        return "too high";
                     if ($x < 0)
                         return "negative value";
                     return "";
                 }
 
+                // custom validation function for year:
                 function validateYear($x) {
                     if (!ctype_digit($x))
                         return "not numeric";
                     if ($x <= 1900)
                         return "too low";
-                    if ($x > 2155)
+                    if ($x >= 2100)
                         return "too high";
                     return "";
                 }
 
-                $title = $_POST["title"];
-                $description = $_POST["description"];
-                $release_year = $_POST["release_year"];
-                $language = $_POST["language"];
-                $rental_rate = $_POST["rental_rate"];
-                $rental_duration = $_POST["rental_duration"];
-                $cost = $_POST["cost"];
-                $length = $_POST["length"];
-                $rating = $ratings[$_POST["rating"]];
-                $cb = isset($_POST["cb"]) ? $_POST["cb"] : [];
+                $title = recall("title");
+                $description = recall("description");
+                $release_year = recall("release_year");
+                $language = recall("language");
+                $rental_rate = recall("rental_rate");
+                $rental_duration = recall("rental_duration");
+                $cost = recall("cost");
+                $length = recall("length");
+                $rating = recall("rating");
+                $cb = isset($_POST["cb"]) ? $_POST["cb"] : [];  // cant use recall becuse empty is [], not ""
 
-                // print_r($cb);
-                // echo "<br>";
-
+                // sf_string is a string that lists all selected special features
                 $sf_string = "";
-                foreach ($cb as $key => $value) {
+                foreach ($cb as $key => $value) 
                     $sf_string .= (strlen($sf_string) == 0 ? "" : ",") . $special_features[$value];
-                }
-                if (0) {     // just for testing
+
+                if (DEBUG_MODE) {     
+                    // make an alert that displays the input values:
                     echo "<div class=\"alert alert-primary alert-dismissible\" role=\"alert\">";
-                    echo "<h2 class=\"h2\">Input:</h2>";
+                    echo "<div class=\"h5\">[DEBUG] Form input:</div>";
                     echo "Title: " . $title . "<br>";
                     echo "Description: " . $description . "<br>";
                     echo "Release year: " . $release_year . "<br>";
@@ -159,10 +178,12 @@ if ($result['success']) {
                 }
 
                 
-                $is_invalid_list = [];
                 // Server-side validation:
-                $puutteet = [];      // lista löydetyistä puutteista formissa
 
+                $flaws = [];            // list of flaws found on the form
+                $is_invalid_list = [];
+
+                // attach a validation function to each input that needs validation
                 $validate_methods = ["title" => "validateText", 
                     "description" => "validateText", 
                     "release_year" => "validateYear",
@@ -172,49 +193,50 @@ if ($result['success']) {
                     "cost" => "validateNumeric",
                     "length" => "validateNumeric",
                     "rating" => "validateText"];
+                // run the validation functions and keep track of problems 
+                // in $flaws and $is_invalid_list
                 foreach ($validate_methods as $key => $value) {
                     $result = call_user_func($value, $_POST[$key]);
                     if ($result != "") {
-                        $puutteet[] = "Invalid " . $field_names[$key] . ": " . $result;
+                        $flaws[] = "Invalid " . $field_names[$key] . ": " . $result;
                         $is_invalid_list[$key] = $result;
                     }
                 }
 
-                if (!$puutteet) {
-                    // ei puutteita
-                    // onko duplikaatti?
+                if (!$flaws) {
+                    // test for duplicates (kinda arbitrary test but just for demo):
                     $stmt = "SELECT * FROM film WHERE title=? AND release_year=? AND language_id=?";
                     $result = substitute_and_execute($conn, $stmt, $title, $release_year, $language);
                     $count = $result['success'] ? mysqli_num_rows($result['value']) : 0;
                     if ($count == 0) {
-                        // yritä lisätä tietokantaan:
+                        // try to insert film into database:
                         $stmt = "INSERT INTO film (title, description, release_year, language_id, rental_rate, rental_duration, replacement_cost, length, rating, special_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         $result = substitute_and_execute($conn, $stmt, $title, $description, $release_year, $language, $rental_rate, $rental_duration, $cost, $length, $rating, $sf_string);
                         if ($result['success']) { 
                             foreach (["title", "description", "release_year", "language", "rental_rate", "rental_duration", "cost", "length", "rating", "cb"] as $field)
                                 unset($_POST[$field]);      // start the form fresh
                         } else {
-                            // uusi puute: INSERT epäonnistui
-                            $puutteet[] = "INSERT INTO error: " . $result['value'];
+                            // insert failed
+                            $flaws[] = "INSERT INTO error: " . $result['value'];
                         }
                     } else {
-                        $puutteet[] = "Film already exists in the database.";
+                        $flaws[] = "Film already exists in the database.";
                     }
                 }
-                if ($puutteet) {
-                    // puutteita löytyi
+                if ($flaws) {
+                    // found a flaw - report the found flaws to the user
                     echo "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">";
                     echo "<div class=\"h5\">ERROR:</div>";
-                    if (count($puutteet) == 1)
-                        echo $puutteet[0];
+                    if (count($flaws) == 1)
+                        echo $flaws[0];
                     else {
-                        foreach ($puutteet as $puute) 
-                            echo "<li>$puute</li>";
+                        foreach ($flaws as $flaw) 
+                            echo "<li>$flaw</li>";
                     }
                     echo "<button class=\"btn-close\" aria-label=\"close\" data-bs-dismiss=\"alert\">";
                     echo "</button></div>";
                 } else {
-                    // puutteita ei löytynyt - lomake hyväksytään
+                    // no flaws - report on the insert success to the user
                     echo "<div class=\"alert alert-success alert-dismissible\" role=\"alert\">";
                     echo "<div class=\"h5\">Great success!</div>";
                     echo "Film inserted into database!";
@@ -223,14 +245,15 @@ if ($result['success']) {
                 }
             }
         ?>
+        
         <div class="row m-2">
-            <h1>Add new film</h1>
-            <!-- Lomake alkaa tästä -->
+            <h1>Add new film <?php if (DEBUG_MODE) echo "[DEBUG MODE]"; ?></h1>
+            <!-- form starts here -->
             <form id="film_form" class="needs-validation" novalidate method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                 <?php $field = "title"; ?>
                 <div class="row mb-3">
                     <label for="title" class="form-label">Title:</label>
-                    <input type="text" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="title" name="title" placeholder="Title of the film" required <?php echo "value=\"" . recall($field) . "\"" ?>>
+                    <input type="text" class="form-control <?php add_validation_attribute($field); ?>" id="title" name="title" placeholder="Title of the film" required <?php echo "value=\"" . recall($field) . "\"" ?>>
                     <div class="invalid-feedback" id="title-feedback" data-default="Valid title is required.">
                         <?php custom_feedback($field); ?>
                     </div>
@@ -239,7 +262,7 @@ if ($result['success']) {
                 <?php $field = "description"; ?>
                 <div class="row mb-3">
                     <label for="description" class="form-label">Description:</label>
-                    <textarea class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="description" name="description" placeholder="Description" required rows="3"><?php echo recall($field); ?></textarea>
+                    <textarea class="form-control <?php add_validation_attribute($field); ?>" id="description" name="description" placeholder="Description" required rows="3"><?php echo recall($field); ?></textarea>
                     <div class="invalid-feedback" id="description-feedback" data-default="Valid description is required.">
                         <?php custom_feedback($field); ?>
                     </div>
@@ -250,7 +273,7 @@ if ($result['success']) {
                     <div class="col-sm-6">
                         <label for="release_year" class="form-label">Release year:</label>
                         <input type="number" class="form-control 
-                            <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>
+                            <?php add_validation_attribute($field); ?>
                             " id="release_year" name="release_year" placeholder="Release year" 
                             required min="1900" <?php echo "value=\"" . recall($field) . "\"" ?>>
                         <div class="invalid-feedback" id="release_year-feedback" data-default="Valid release year is required.">
@@ -261,7 +284,7 @@ if ($result['success']) {
                     <?php $field = "language"; ?>
                     <div class="col-sm-6">
                         <label for="language" class="form-label">Language:</label>
-                        <select class="form-select selectpicker <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="language" name="language" required>
+                        <select class="form-select selectpicker <?php add_validation_attribute($field); ?>" id="language" name="language" required>
                             <option value="" disabled selected>Select language</option>
                             <?php 
                                 foreach ($languages as $key => $value) {
@@ -281,7 +304,7 @@ if ($result['success']) {
                     <?php $field = "rental_rate"; ?>
                     <div class="col-sm-6">
                         <label for="rental_rate" class="form-label">Rental rate:</label>
-                        <input type="number" step="0.01" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rental_rate" name="rental_rate" placeholder="Rental rate" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <input type="number" step="0.01" class="form-control <?php add_validation_attribute($field); ?>" id="rental_rate" name="rental_rate" placeholder="Rental rate" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
                         <div class="invalid-feedback" id="rental_rate-feedback" data-default="Valid rental rate is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -290,17 +313,18 @@ if ($result['success']) {
                     <?php $field = "rental_duration"; ?>
                     <div class="col-sm-6">
                         <label for="rental_duration" class="form-label">Rental duration:</label>
-                        <input type="number" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rental_duration" name="rental_duration" placeholder="Rental duration" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
-                        <div class="invalid-feedback" id="rental_duration-feedback" data-default="Rental duration is required.">
+                        <input type="number" class="form-control <?php add_validation_attribute($field); ?>" id="rental_duration" name="rental_duration" placeholder="Rental duration" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <div class="invalid-feedback" id="rental_duration-feedback" data-default="Valid rental duration is required.">
                             <?php custom_feedback($field); ?>
                         </div>
                     </div>
                 </div>
                 <div class="row mb-3">
+
                     <?php $field = "cost"; ?>
                     <div class="col-sm-6">
                         <label for="cost" class="form-label">Replacement cost:</label>
-                        <input type="number" step="0.01" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="cost" name="cost" placeholder="Replacement cost" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <input type="number" step="0.01" class="form-control <?php add_validation_attribute($field); ?>" id="cost" name="cost" placeholder="Replacement cost" required min="0" <?php echo "value=\"" . recall($field) . "\"" ?>>
                         <div class="invalid-feedback" id="cost-feedback" data-default="Valid replacement cost is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -309,17 +333,18 @@ if ($result['success']) {
                     <?php $field = "length"; ?>
                     <div class="col-sm-6">
                         <label for="length" class="form-label">Length:</label>
-                        <input type="number" class="form-control <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="length" name="length" placeholder="Length" required min="0" max="10000" <?php echo "value=\"" . recall($field) . "\"" ?>>
+                        <input type="number" class="form-control <?php add_validation_attribute($field); ?>" id="length" name="length" placeholder="Length" required min="0" max="10000" <?php echo "value=\"" . recall($field) . "\"" ?>>
                         <div class="invalid-feedback" id="length-feedback" data-default="Valid length is required.">
                             <?php custom_feedback($field); ?>
                         </div>
                     </div>
                 </div>
                 <div class="row mb-3">
+
                     <?php $field = "rating"; ?>
                     <div class="col-12 col-sm-4">
                         <label for="rating" class="form-label">Rating:</label>
-                        <select class="form-select selectpicker <?php echo (array_key_exists($field, $is_invalid_list) ? "is-invalid" : ""); ?>" id="rating" name="rating" required>
+                        <select class="form-select selectpicker <?php add_validation_attribute($field); ?>" id="rating" name="rating" required>
                             <option value="" disabled selected>All ratings</option>
                             <?php 
                                 foreach ($ratings as $key => $value) {
