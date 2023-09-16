@@ -1,11 +1,11 @@
 <?php
 
 // Usage: 
-//     $db = "database name here"
-//     require "(path to this file here)/sql_connect.php";
-//     use $conn and optionally substitute_and_execute for sql statements
+// 1) define $db = "database name here" 
+// 2) require "(path to this file here)/sql_connect.php";
+// 3) use $conn and optionally substitute_and_execute function for sql statements
 
-require "config/sql_config.php";    // this defines SERVER, USERNAME, PASSWORD
+require "config/sql_config.php";    // this just defines SERVER, USERNAME, PASSWORD
 
 $conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
 
@@ -20,13 +20,14 @@ function sanitize_for_html($text) {
 }
 
 // Function for safe parameter substitution into SQL statements using 
-// prepared statements and placeholders. Example of use: 
-// $result = prepare_statement($conn, "SELECT * FROM t1, t2 WHERE c1=? AND c2=?", param1, param2)
-// if ($result['success']) { echo "ERROR: " . $result['value']; } 
-// else { // success, operate with $result['value'] if it is needed }
-// The question marks in the statement are replaced with the parameters in a safe way.
+// prepared statements and placeholders. 
 // Returns array with keys "success" and "value". Success is true iff no problems occured, 
 // value is return value of statement on success or error message on failure.
+//
+// Example of use: 
+// $result = prepare_statement($conn, "SELECT * FROM t1, t2 WHERE c1=? AND c2=?", param1, param2)
+// if ($result['success']) { // success, operate with $result['value'] if it is needed }
+// else { echo "ERROR: " . $result['value']; } 
 function substitute_and_execute($conn, $stmt_text) {
     $params = array_slice(func_get_args(), 2);
     $n = count($params);
