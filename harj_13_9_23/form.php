@@ -13,8 +13,8 @@ function recall($name, $sanitize) {
     return isset($_POST[$name]) ? $_POST[$name] : "";
 }
 
-// used to add attributes for bootstrap to tell which inputs failed server-side validation
-function add_validation_attribute($field) {
+// used to add class for bootstrap to tell which inputs failed server-side validation
+function add_validation_class($field) {
     global $is_invalid_list;
     if (empty($is_invalid_list))    // form is fresh - do nothing
         return;
@@ -258,7 +258,7 @@ if ($result['success']) {
                 <?php $field = "title"; ?>
                 <div class="row mb-3">
                     <label for="title" class="form-label">Title:</label>
-                    <input type="text" class="form-control <?php add_validation_attribute($field); ?>" id="title" name="title" placeholder="Title of the film" required <?php echo "value=\"" . recall($field, true) . "\"" ?>>
+                    <input type="text" class="form-control <?php add_validation_class($field); ?>" id="title" name="title" placeholder="Title of the film" required <?php echo "value=\"" . recall($field, true) . "\"" ?>>
                     <div class="invalid-feedback" id="title-feedback" data-default="Valid title is required.">
                         <?php custom_feedback($field); ?>
                     </div>
@@ -267,7 +267,7 @@ if ($result['success']) {
                 <?php $field = "description"; ?>
                 <div class="row mb-3">
                     <label for="description" class="form-label">Description:</label>
-                    <textarea class="form-control <?php add_validation_attribute($field); ?>" id="description" name="description" placeholder="Description" required rows="3"><?php echo recall($field, true); ?></textarea>
+                    <textarea class="form-control <?php add_validation_class($field); ?>" id="description" name="description" placeholder="Description" required rows="3"><?php echo recall($field, true); ?></textarea>
                     <div class="invalid-feedback" id="description-feedback" data-default="Valid description is required.">
                         <?php custom_feedback($field); ?>
                     </div>
@@ -277,10 +277,7 @@ if ($result['success']) {
                     <?php $field = "release_year"; ?>
                     <div class="col-sm-6">
                         <label for="release_year" class="form-label">Release year:</label>
-                        <input type="number" class="form-control 
-                            <?php add_validation_attribute($field); ?>
-                            " id="release_year" name="release_year" placeholder="Release year" 
-                            required min="1900" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
+                        <input type="number" class="form-control <?php add_validation_class($field); ?>" id="release_year" name="release_year" placeholder="Release year" required min="1900" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
                         <div class="invalid-feedback" id="release_year-feedback" data-default="Valid release year is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -289,7 +286,7 @@ if ($result['success']) {
                     <?php $field = "language"; ?>
                     <div class="col-sm-6">
                         <label for="language" class="form-label">Language:</label>
-                        <select class="form-select selectpicker <?php add_validation_attribute($field); ?>" id="language" name="language" required>
+                        <select class="form-select selectpicker <?php add_validation_class($field); ?>" id="language" name="language" required>
                             <option value="" disabled selected>Select language</option>
                             <?php 
                                 foreach ($languages as $key => $value) {
@@ -309,7 +306,7 @@ if ($result['success']) {
                     <?php $field = "rental_rate"; ?>
                     <div class="col-sm-6">
                         <label for="rental_rate" class="form-label">Rental rate:</label>
-                        <input type="number" step="0.01" class="form-control <?php add_validation_attribute($field); ?>" id="rental_rate" name="rental_rate" placeholder="Rental rate" required min="0" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
+                        <input type="number" step="0.01" class="form-control <?php add_validation_class($field); ?>" id="rental_rate" name="rental_rate" placeholder="Rental rate" required min="0" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
                         <div class="invalid-feedback" id="rental_rate-feedback" data-default="Valid rental rate is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -318,7 +315,7 @@ if ($result['success']) {
                     <?php $field = "rental_duration"; ?>
                     <div class="col-sm-6">
                         <label for="rental_duration" class="form-label">Rental duration:</label>
-                        <input type="number" class="form-control <?php add_validation_attribute($field); ?>" id="rental_duration" name="rental_duration" placeholder="Rental duration" required min="0" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
+                        <input type="number" class="form-control <?php add_validation_class($field); ?>" id="rental_duration" name="rental_duration" placeholder="Rental duration" required min="0" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
                         <div class="invalid-feedback" id="rental_duration-feedback" data-default="Valid rental duration is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -329,7 +326,7 @@ if ($result['success']) {
                     <?php $field = "cost"; ?>
                     <div class="col-sm-6">
                         <label for="cost" class="form-label">Replacement cost:</label>
-                        <input type="number" step="0.01" class="form-control <?php add_validation_attribute($field); ?>" id="cost" name="cost" placeholder="Replacement cost" required min="0" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
+                        <input type="number" step="0.01" class="form-control <?php add_validation_class($field); ?>" id="cost" name="cost" placeholder="Replacement cost" required min="0" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
                         <div class="invalid-feedback" id="cost-feedback" data-default="Valid replacement cost is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -338,7 +335,7 @@ if ($result['success']) {
                     <?php $field = "length"; ?>
                     <div class="col-sm-6">
                         <label for="length" class="form-label">Length:</label>
-                        <input type="number" class="form-control <?php add_validation_attribute($field); ?>" id="length" name="length" placeholder="Length" required min="0" max="10000" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
+                        <input type="number" class="form-control <?php add_validation_class($field); ?>" id="length" name="length" placeholder="Length" required min="0" max="10000" <?php echo "value=\"" . recall($field, true) . "\"" ?>>
                         <div class="invalid-feedback" id="length-feedback" data-default="Valid length is required.">
                             <?php custom_feedback($field); ?>
                         </div>
@@ -349,7 +346,7 @@ if ($result['success']) {
                     <?php $field = "rating"; ?>
                     <div class="col-12 col-sm-4">
                         <label for="rating" class="form-label">Rating:</label>
-                        <select class="form-select selectpicker <?php add_validation_attribute($field); ?>" id="rating" name="rating" required>
+                        <select class="form-select selectpicker <?php add_validation_class($field); ?>" id="rating" name="rating" required>
                             <option value="" disabled selected>All ratings</option>
                             <?php 
                                 foreach ($ratings as $key => $value) {
