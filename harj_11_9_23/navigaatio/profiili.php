@@ -19,7 +19,7 @@
     <div class="container mt-5">
         <div class="jumbotron">
             <?php
-                $username = $_SESSION["username"];
+                $username = htmlspecialchars($_SESSION["username"]);
                 echo "<h1 class=\"display-4\">Terve, $username</h1>";
             ?>
             <p class="lead">Tämä on sinun profiilisivusi.</p>
