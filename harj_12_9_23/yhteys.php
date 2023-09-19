@@ -1,7 +1,8 @@
 <?php
 
-$db = "autokanta";
 require "../sql_connect.php";
+
+$conn = connect("autokanta");
 
 // Henkilo: (hetu, nimi, osoite, puhelinnumero)
 // Ajoneuvo: (rekisterinro, vari, vuosimalli, omistaja)
@@ -60,5 +61,4 @@ $cmd6 = 'INSERT INTO Sakko (ajoneuvo, henkilo, pvm, summa, syy) VALUES ("DAU-781
 // Tässä sakko annetaan Teemu Tammiselle vaikka hän ei autoa omistakaan - ehkä ajanut kaverin autolla. Tietokanta sallii.
 instruct($conn, $cmd6);
 
-$conn->close();
 ?>

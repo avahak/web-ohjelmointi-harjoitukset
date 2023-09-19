@@ -1,7 +1,8 @@
 <?php
 
-$db = "sakila";
 require "../sql_connect.php";
+
+$conn = connect("sakila");
 
 // use this to output some extra info for debugging:
 define('DEBUG_MODE', 0);
@@ -29,24 +30,6 @@ function custom_feedback($field) {
     global $is_invalid_list;
     if (array_key_exists($field, $is_invalid_list))
         echo "Invalid " . $field_names[$field] . ": " . $is_invalid_list[$field] . ".";
-}
-
-// Used to extract all possible values of ENUM or SET from a field
-function extract_range($conn, $table, $field) {
-    // cannot use substitution with table or field names so just use plain old:
-    $stmt = "SHOW COLUMNS FROM $table WHERE Field='$field'";
-    $result = substitute_and_execute($conn, $stmt);
-    $range = [];
-    if ($result['success']) { 
-        $cleaner_pattern = '/\'([^\']*)\'/';   // matches content that starts and ends with '
-        $row = $result['value']->fetch_assoc();
-        $dirty_range = explode(",", $row['Type']);
-        foreach ($dirty_range as $dirty) {
-            if (preg_match($cleaner_pattern, $dirty, $matches)) 
-                $range[] = $matches[1];  // [1] for only stuff inside first capture group ()
-        }
-    }
-    return $range;
 }
 
 // associate a text description for each input field name:
@@ -388,8 +371,3 @@ if ($result['success']) {
     </div>
 </body>
 </html>
-
-
-<?php 
-$conn->close();
-?>

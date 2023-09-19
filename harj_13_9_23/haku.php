@@ -1,7 +1,8 @@
 <?php
 
-$db = "sakila";
 require "../sql_connect.php";
+
+$conn = connect("sakila");
 
 // find $genres:
 $stmt = 'SELECT category_id, name FROM category ORDER BY name';
@@ -48,7 +49,6 @@ if (isset($_POST["name"]) && isset($_POST["genre"])) {
     // print_r(array_slice($movies, 1, 1));
 }
 
-$conn->close();
 ?>
 
 <!DOCTYPE html>

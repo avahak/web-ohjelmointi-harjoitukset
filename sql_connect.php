@@ -1,18 +1,15 @@
 <?php
 
-// Usage: 
-// 1) define $db = "database name here" 
-// 2) require "(path to this file here)/sql_connect.php";
-// 3) use $conn and optionally substitute_and_execute function for sql statements
-
 require "config/sql_config.php";    // this just defines SERVER, USERNAME, PASSWORD
 
-$conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
-
-if ($conn->connect_error) {
-    die("Connecting to database failed: " . $conn->connect_error);
+function connect($db) {
+    $conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
+    if ($conn->connect_error) {
+        die("Connecting to database failed: " . $conn->connect_error);
+    }
+    $conn->set_charset("utf8");
+    return $conn;
 }
-$conn->set_charset("utf8");
 
 // Use to sanitize strings that are inserted into html
 function sanitize_for_html($text) {
@@ -25,7 +22,7 @@ function sanitize_for_html($text) {
 // value is return value of statement on success or error message on failure.
 //
 // Example of use: 
-// $result = prepare_statement($conn, "SELECT * FROM t1, t2 WHERE c1=? AND c2=?", param1, param2)
+// $result = prepare_statement($conn, "SELECT * FROM t1, t2 WHERE c1=? AND c2=?", param1, param2);
 // if ($result['success']) { // success, operate with $result['value'] if it is needed }
 // else { echo "ERROR: " . $result['value']; } 
 function substitute_and_execute($conn, $stmt_text) {
@@ -52,6 +49,24 @@ function substitute_and_execute($conn, $stmt_text) {
     } catch (ArgumentCountError $e) {
         return array("success" => false, "value" => $e->getMessage());
     }
+}
+
+// Used to extract all possible values of ENUM or SET from a field
+function extract_range($conn, $table, $field) {
+    // cannot use substitution with table or field names so just use plain old:
+    $stmt = "SHOW COLUMNS FROM $table WHERE Field='$field'";
+    $result = substitute_and_execute($conn, $stmt);
+    $range = [];
+    if ($result['success']) { 
+        $cleaner_pattern = '/\'([^\']*)\'/';   // matches content that starts and ends with '
+        $row = $result['value']->fetch_assoc();
+        $dirty_range = explode(",", $row['Type']);
+        foreach ($dirty_range as $dirty) {
+            if (preg_match($cleaner_pattern, $dirty, $matches)) 
+                $range[] = $matches[1];  // [1] for only stuff inside first capture group ()
+        }
+    }
+    return $range;
 }
 
 ?>
