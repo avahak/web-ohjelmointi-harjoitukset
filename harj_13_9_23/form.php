@@ -10,7 +10,7 @@ define('DEBUG_MODE', 0);
 // form data retention helper function:
 function recall($name, $sanitize) {
     if ($sanitize)
-        return isset($_POST[$name]) ? sanitize_for_html($_POST[$name]) : "";
+        return isset($_POST[$name]) ? htmlspecialchars($_POST[$name]) : "";
     return isset($_POST[$name]) ? $_POST[$name] : "";
 }
 
@@ -274,8 +274,8 @@ if ($result['success']) {
                             <option value="" disabled selected>Select language</option>
                             <?php 
                                 foreach ($languages as $key => $value) {
-                                    $s_key = sanitize_for_html($key);
-                                    $s_value = sanitize_for_html($value);
+                                    $s_key = htmlspecialchars($key);
+                                    $s_value = htmlspecialchars($value);
                                     echo "<option value='" . $s_key . "' " . ($key == recall($field, false) ? "selected" : "") . ">" . $s_value . "</option>";
                                 }
                             ?>
@@ -334,8 +334,8 @@ if ($result['success']) {
                             <option value="" disabled selected>All ratings</option>
                             <?php 
                                 foreach ($ratings as $key => $value) {
-                                    $s_key = sanitize_for_html($key);
-                                    $s_value = sanitize_for_html($value);
+                                    $s_key = htmlspecialchars($key);
+                                    $s_value = htmlspecialchars($value);
                                     echo "<option value='" . $s_key . "' " . ($key == recall($field, false) ? "selected" : "") . ">" . $s_value . "</option>";
                                 }
                             ?>

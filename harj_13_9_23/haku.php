@@ -71,7 +71,7 @@ if (isset($_POST["name"]) && isset($_POST["genre"])) {
                         <input type="text" class="form-control" name="name" placeholder="Enter movie name" 
                             <?php 
                             if (isset($_POST['genre'])) {
-                                echo " value=\"" . sanitize_for_html($_POST['name']) . "\"";
+                                echo " value=\"" . htmlspecialchars($_POST['name']) . "\"";
                             }
                             ?>
                             >
@@ -88,7 +88,7 @@ if (isset($_POST["name"]) && isset($_POST["genre"])) {
                                     $s = "";
                                     if (isset($_POST["genre"]) && ($_POST["genre"] == $key))
                                         $s = " selected";
-                                    echo "<option value='" . sanitize_for_html($key) . "'$s>" . sanitize_for_html($value) . "</option>";
+                                    echo "<option value='" . htmlspecialchars($key) . "'$s>" . htmlspecialchars($value) . "</option>";
                                 }
                             ?>
                         </select>
@@ -121,12 +121,12 @@ if (isset($_POST["name"]) && isset($_POST["genre"])) {
                         foreach ($movies as $key => $value) {
                             echo "<tr>";
                             echo "<td>" . ($key+1) . "</td>";
-                            echo "<td>" . sanitize_for_html($value[0]) . "</td>";
-                            echo "<td>" . sanitize_for_html($value[1]) . "</td>";
-                            echo "<td>" . sanitize_for_html($value[2]) . "</td>";
-                            echo "<td>" . sanitize_for_html($value[3]) . "</td>";
-                            echo "<td>" . sanitize_for_html($value[4]) . "</td>";
-                            echo "<td>" . sanitize_for_html($value[4]) . "</td>";
+                            echo "<td>" . htmlspecialchars($value[0]) . "</td>";
+                            echo "<td>" . htmlspecialchars($value[1]) . "</td>";
+                            echo "<td>" . htmlspecialchars($value[2]) . "</td>";
+                            echo "<td>" . htmlspecialchars($value[3]) . "</td>";
+                            echo "<td>" . htmlspecialchars($value[4]) . "</td>";
+                            echo "<td>" . htmlspecialchars($value[4]) . "</td>";
                             echo "</tr>";
                         }
                     ?>

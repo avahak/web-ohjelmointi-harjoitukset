@@ -1,5 +1,21 @@
 <?php 
-    session_start();
+
+session_start();
+
+require_once "../sql_connect.php";
+require_once "../logs/logger.php";
+require_once "db_operations.php";
+
+$conn = new SqlConnection("web_admin_db");
+
+if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
+    // using session_unset() takes immediate effect, unlike session_destroy() alone
+    session_unset();
+    session_destroy();
+    // clear the remember me cookie too in case it was set:
+    setcookie("remember_me", "", time() - 3600);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -20,43 +36,28 @@
 </head>
 
 <body>
-    <?php
-        if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
-            // using session_unset() takes immediate effect, unlike session_destroy() alone
-            session_unset();
-            session_destroy();
-        }
-        // if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        //     $username = isset($_POST["username"]) ? $_POST["username"] : "";
-        //     $pw = isset($_POST["pw"]) ? $_POST["pw"] : "";
-        //     if (($username) && ($pw)) {
-        //         $_SESSION["username"] = $username;
-        //     }
-        // }
-    ?>
-
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <div class="container d-flex">
             <button class="navbar-toggler order-1" data-bs-toggle="collapse" data-bs-target="#nav">
                 <div class="navbar-toggler-icon"></div>
             </button>
 
-            <a href="#" class="navbar-brand order-2">Frontpage</a>
+            <a href="base.php" class="navbar-brand order-2">Frontpage</a>
 
             <ul class="navbar-nav order-3 order-md-5">
                 <?php
                     echo "<li class=\"nav-item\">";
-                    if (isset($_SESSION["username"])) {
-                        echo "<a href=\"base.php?logout\" class=\"nav-link\">Logout</a>";
+                    if (isset($_SESSION["email"])) {
+                        echo "<a href=\"base.php?logout\" class=\"nav-link\">Log out</a>";
                     } else {
-                        echo "<a href=\"register.php\" class=\"nav-link\">Registration</a>";
+                        echo "<a href=\"signup.php\" class=\"nav-link\">Sign up</a>";
                     }
                     echo "</li>";
                     echo "<li class=\"nav-item\">";
-                    if (isset($_SESSION["username"])) {
+                    if (isset($_SESSION["email"])) {
                         echo "<a href=\"profile.php\" class=\"nav-link\">Profile</a>";
                     } else {
-                        echo "<a href=\"login.php\" class=\"nav-link\">Login</a>";
+                        echo "<a href=\"login.php\" class=\"nav-link\">Log in</a>";
                     }
                     echo "</li>";
                 ?>
@@ -71,7 +72,7 @@
                         <a href="#" class="nav-link">Contact</a>
                     </li>
                     <?php
-                        if (isset($_SESSION["username"])) {
+                        if (isset($_SESSION["email"])) {
                             echo "<li class=\"nav-item\">";
                             echo "<a href=\"#\" class=\"nav-link\">Confidential</a>";
                             echo "</li>";
@@ -82,7 +83,17 @@
         </div>
     </nav>
     <div class="container">
-        Content here..
+        Content here..<br>
+        <?php
+        if (isset($_SESSION["email"]))
+            echo "email session variable:" . htmlspecialchars($_SESSION["email"]) . "</br>";
+        else 
+            echo "email session variable is not set.</br>";
+        if (isset($_COOKIE["remember_me"]))
+            echo "remember_me cookie value:" . htmlspecialchars($_COOKIE["remember_me"]) . "</br>";
+        else 
+            echo "remember_me cookie is not set.</br>";
+        ?>
     </div>
 </body>
 

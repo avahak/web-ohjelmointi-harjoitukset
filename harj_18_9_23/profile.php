@@ -2,10 +2,12 @@
 
 session_start();
 
-require "../sql_connect.php";
-require "../config/pepper.php";     // obtains PEPPER for password hashing
+require_once "../sql_connect.php";
+require_once "db_operations.php";
 
-$conn = connect("neilikka");
+$conn = new SqlConnection("web_admin_db");
+$user_id = authenticate_user($conn, true);
+$user_data = user_data_from_id($conn, $user_id);
 
 ?>
 
@@ -25,33 +27,32 @@ $conn = connect("neilikka");
     <div class="container mt-5">
         <div class="jumbotron">
             <?php
-                $username = htmlspecialchars($_SESSION["username"]);
-                echo "<h1 class=\"display-4\">Hello, $username</h1>";
+            $s_firstname = htmlspecialchars($user_data["firstname"]);
+            $s_lastname = htmlspecialchars($user_data["firstname"]);
+            $s_email = htmlspecialchars($user_data["email"]);
+            $s_phone = htmlspecialchars($user_data["phone"]);
+            $s_pw_hash = htmlspecialchars($user_data["pw_hash"]);
+            echo "<h1 class=\"display-4\">Hello, $s_firstname!</h1>";
             ?>
             <p class="lead">Here is what we know about you:</p>
 
             <?php
-            
-            $username = $_SESSION["username"];
-            $stmt = "SELECT * FROM users WHERE username=?";
-            $result = substitute_and_execute($conn, $stmt, $username);
-            if ($result["success"]) 
-                if ($row = $result["value"]->fetch_assoc()) {
-                    echo "Username: " . $row["username"] . "<br>";
-                    echo "Full name: " . $row["fullname"] . "<br>";
-                    echo "Email: " . $row["email"] . "<br>";
-                    echo "Phone number: " . $row["phone"] . "<br>";
-                    echo "Password hash: " . $row["pw_hash"] . "<br>";
-                }
+            echo "Full name: $s_firstname $s_lastname. <br>";
+            echo "Email: $s_email.<br>";
+            echo "Phone number: $s_phone.<br>";
+            echo "Password hash: $s_pw_hash.<br>";
             ?>
 
             <hr class="my-4">
             <div class="row">
-                <div class="col-6">
+                <div class="col-4">
                     <a href="base.php" class="btn btn-primary">Back</a>
                 </div>
-                <div class="col-6 d-flex justify-content-end">
+                <div class="col-4">
                     <a href="base.php?logout" class="btn btn-danger">Logout</a>
+                </div>
+                <div class="col-4">
+                    <a href="base.php" class="btn btn-danger">Change password</a>
                 </div>
             </div>
         </div>

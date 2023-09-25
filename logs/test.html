@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expandable Text</title>
+    <style>
+        /* .expanded {
+            display: block;
+        } */
+        .collapsed {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <p class="text" onclick="toggleInfo('text1')">Text1</p>
+    <div id="text1info" class="collapsed">
+        Info 1
+        Info 2
+        Info 3
+    </div>
+    <p class="text" onclick="toggleInfo('text2')">Text2</p>
+    <div id="text2info" class="collapsed">
+        Info A
+        Info B
+        Info C
+    </div>
+    <p class="text" onclick="toggleInfo('text3')">Text3</p>
+    <div id="text3info" class="collapsed">
+        More Info X
+        More Info Y
+        More Info Z
+    </div>
+    <p class="text" onclick="toggleInfo('text4')">Text4</p>
+    <div id="text4info" class="collapsed">
+        Additional Info
+    </div>
+
+    <script>
+        function toggleInfo(textId) {
+            var info = document.getElementById(textId + 'info');
+            if (info.style.display === 'none' || info.style.display === '') {
+                info.style.display = 'block';
+            } else {
+                info.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
