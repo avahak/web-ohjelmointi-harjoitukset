@@ -1,4 +1,40 @@
+PAGES TO HANDLE ACCOUNT MANAGEMENT:
+(functions: signup, login, reset password, change password, resend verification email)
+- signup
+    - link to resend verification email
+- login
+    - link to reset_password
+- reset_password
+    - sends email with link back to same page with ?key=..
+- change_password
+    - 
+
+
+PHP SYNTAX
+  - $name = "kissa"; $$name = "mau"; echo $kissa;
+  - variable unpacking: [$x, $y, $z] = $row->fetch_assoc();
+  - variables into an associative array: compact($x, $y)
+
+function f(
+    string $name,
+    string $value = "",
+    int $expires_or_options = 0,
+    string $path = "",
+    string $domain = "",
+    bool $secure = false,
+    bool $httponly = false
+): string {
+    return $httponly ? "T" : "F";
+}
+
+echo f("myCookie", "cookieValue", time() + 3600, httponly: false);
+
+
 TODO
+    - fix remember_me converting to session automatically (make common header?)
+    - secure_page(); asettaa $_SESSION["target_page"] = $_SERVER["PHP_SELF"]; secure page alussa, ohjaa login sivulle jos ei logged in
+    - !!! Selvitä hyvä keino "Email is already used" sijasta (signup, login, forgot password)
+    - insert_id -> affected_rows vois olla parempi (voi käyttää update, others too?)
     - findstr /s /i /m "str_to_find" *.php
     - $base64EncodedData = base64_encode(...); 
       $urlEncodedData = urlencode($base64EncodedData);

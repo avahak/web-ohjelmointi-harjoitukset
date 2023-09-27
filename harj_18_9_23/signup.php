@@ -4,15 +4,13 @@
 define('DEBUG_MODE', 1);
 
 require_once "../sql_connect.php";
-require_once "../logs/logger.php";
 require_once "validation_php.php";
-require_once "db_operations.php";
+require_once "user_operations.php";
 require_once "send_mail.php";
 require_once "tokens.php";
 require_once "template_pages.php";
 
-$conn = new SqlConnection("web_admin_db");
-$logger = new Logger();
+init();
 
 // form data retention helper function:
 function recall($name, $sanitize) {
@@ -59,18 +57,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$is_invalid_list) {
         // add user to database here..
 
-        if (!user_id_from_email($conn, $email)) {
-            $result = add_user($conn, $firstname, $lastname, $email, $phone, $pw);
+        if (!user_id_from_email($email)) {
+            $result = add_user($firstname, $lastname, $email, $phone, $pw);
             if ($result["success"]) { 
                 // send verification email and tell user about it:
-                $user_id = $conn->get_connection()->insert_id;
+                $user_id = $GLOBALS["g_conn"]->get_connection()->insert_id;
                 $fullname = $firstname . " " . $lastname;
-                $token = create_token($conn, $user_id, "EMAIL_VERIFICATION", 24);
+                $token = create_token($user_id, "EMAIL_VERIFICATION", 24);
                 $key = urlencode($token["selector"] . $token["validator"]);
 
-                $logger->debug("Adding new user", ["user_id" => $user_id, "key" => $key, "fullname" => $fullname, "email" => $email]);
+                $GLOBALS["g_logger"]->debug("Adding new user", ["user_id" => $user_id, "key" => $key, "fullname" => $fullname, "email" => $email]);
 
-                send_mail("Email verification link", template_email_verification_email($key), 
+                send_mail("Email verification link", email_template_verification_email($key), 
                         "Webteam", $email, $fullname, true);
                 echo template_signup_success($email);
                 exit(); 
@@ -84,8 +82,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     if (!$is_invalid_list) {
         // $_SESSION["email"] = $email;
-        header("Location: base.php");
-        // echo "<script>window.location.href=\"base.php\";</script>";
+        header("Location: front.php");
+        // echo "<script>window.location.href=\"front.php\";</script>";
         exit();
     }
 }
@@ -107,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- <?php echo "<script>console.log(VALIDATION_JSON);</script>"; ?> -->
     <script src="validation_js.js"></script>
 </head>
-<body>
+<body class="bg-dark text-light">
     <div class="container mt-2 p-auto">
         <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -140,7 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="row m-2">
             <h1>Registration <?php if (DEBUG_MODE) echo "[DEBUG MODE]"; ?></h1>
             <!-- form starts here -->
-            <form id="my_form" class="needs-validation <?php echo ($_SERVER["REQUEST_METHOD"] == "POST" ? "was-validated" : ""); ?>" novalidate method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <form id="my_form" class="needs-validation <?php echo ($_SERVER["REQUEST_METHOD"] == "POST" ? "was-validated" : ""); ?>" novalidate method="POST">
                 <div class="row my-3">
 
                     <?php $field = "firstname"; ?>
@@ -210,6 +208,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Submit -->
                 <button type="submit" name="submit" id="submit" class="btn btn-primary btn-lg">Submit</button>
             </form>
+            <p class="mt-5"><a href="front.php">Back to frontpage</a></p>
         </div>
     </div>
 </body>

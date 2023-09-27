@@ -5,9 +5,9 @@
 
 require_once '../config/mailtrap.php';
 require_once '../logs/logger.php';
-require_once '../../kurssi_include/PHPMailer/src/Exception.php';
-require_once '../../kurssi_include/PHPMailer/src/PHPMailer.php';
-require_once '../../kurssi_include/PHPMailer/src/SMTP.php';
+require_once '../include/PHPMailer/src/Exception.php';
+require_once '../include/PHPMailer/src/PHPMailer.php';
+require_once '../include/PHPMailer/src/SMTP.php';
 
 $logger = new Logger();
 

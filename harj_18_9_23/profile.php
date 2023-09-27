@@ -1,13 +1,10 @@
 <?php 
 
-session_start();
-
 require_once "../sql_connect.php";
-require_once "db_operations.php";
+require_once "user_operations.php";
 
-$conn = new SqlConnection("web_admin_db");
-$user_id = authenticate_user($conn, true);
-$user_data = user_data_from_id($conn, $user_id);
+$user_id = init_secure_page();
+$user_data = user_data_from_id($user_id);
 
 ?>
 
@@ -22,9 +19,9 @@ $user_data = user_data_from_id($conn, $user_id);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <link href="styles.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-dark text-light">
     <!-- Form Section -->
-    <div class="container mt-5">
+    <div class="container text-dark mt-5">
         <div class="jumbotron">
             <?php
             $s_firstname = htmlspecialchars($user_data["firstname"]);
@@ -44,16 +41,16 @@ $user_data = user_data_from_id($conn, $user_id);
             ?>
 
             <hr class="my-4">
-            <div class="row">
-                <div class="col-4">
-                    <a href="base.php" class="btn btn-primary">Back</a>
+            <div class="row mb-5">
+                <div class="col-auto">
+                    <a href="front.php?logout" class="btn btn-primary">Logout</a>
                 </div>
-                <div class="col-4">
-                    <a href="base.php?logout" class="btn btn-danger">Logout</a>
+                <div class="col-auto">
+                    <a href="change_password.php" class="btn btn-primary">Change password</a>
                 </div>
-                <div class="col-4">
-                    <a href="base.php" class="btn btn-danger">Change password</a>
-                </div>
+            </div>
+            <div>
+                <a href="front.php">Back to frontpage</a>
             </div>
         </div>
     </div>

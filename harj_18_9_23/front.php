@@ -1,18 +1,20 @@
 <?php 
 
-session_start();
-
 require_once "../sql_connect.php";
 require_once "../logs/logger.php";
-require_once "db_operations.php";
+require_once "user_operations.php";
+require_once "init.php";
 
-$conn = new SqlConnection("web_admin_db");
+init();
 
 if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
+    $user_id = authenticate_user(false);
     // using session_unset() takes immediate effect, unlike session_destroy() alone
     session_unset();
     session_destroy();
-    // clear the remember me cookie too in case it was set:
+
+    remove_tokens($user_id, "REMEMBER_ME");
+
     setcookie("remember_me", "", time() - 3600);
 }
 
@@ -42,22 +44,22 @@ if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
                 <div class="navbar-toggler-icon"></div>
             </button>
 
-            <a href="base.php" class="navbar-brand order-2">Frontpage</a>
+            <a href="front.php" class="navbar-brand order-2">Frontpage</a>
 
             <ul class="navbar-nav order-3 order-md-5">
                 <?php
                     echo "<li class=\"nav-item\">";
-                    if (isset($_SESSION["email"])) {
-                        echo "<a href=\"base.php?logout\" class=\"nav-link\">Log out</a>";
+                    if (isset($_SESSION["user_id"])) {
+                        echo "<a href=\"front.php?logout\" class=\"nav-link\">Log out</a>";
                     } else {
-                        echo "<a href=\"signup.php\" class=\"nav-link\">Sign up</a>";
+                        echo "<a href=\"login.php\" class=\"nav-link\">Log in</a>";
                     }
                     echo "</li>";
                     echo "<li class=\"nav-item\">";
-                    if (isset($_SESSION["email"])) {
+                    if (isset($_SESSION["user_id"])) {
                         echo "<a href=\"profile.php\" class=\"nav-link\">Profile</a>";
                     } else {
-                        echo "<a href=\"login.php\" class=\"nav-link\">Log in</a>";
+                        echo "<a href=\"signup.php\" class=\"nav-link\">Sign up</a>";
                     }
                     echo "</li>";
                 ?>
@@ -72,7 +74,7 @@ if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
                         <a href="#" class="nav-link">Contact</a>
                     </li>
                     <?php
-                        if (isset($_SESSION["email"])) {
+                        if (isset($_SESSION["user_id"])) {
                             echo "<li class=\"nav-item\">";
                             echo "<a href=\"#\" class=\"nav-link\">Confidential</a>";
                             echo "</li>";
@@ -85,6 +87,10 @@ if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
     <div class="container">
         Content here..<br>
         <?php
+        if (isset($_SESSION["user_id"]))
+            echo "user_id session variable:" . htmlspecialchars($_SESSION["user_id"]) . "</br>";
+        else 
+            echo "user_id session variable is not set.</br>";
         if (isset($_SESSION["email"]))
             echo "email session variable:" . htmlspecialchars($_SESSION["email"]) . "</br>";
         else 

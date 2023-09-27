@@ -4,10 +4,12 @@ function updateValidationMessage(input, msg) {
     let div = document.getElementById(feedbackId);
     div.innerHTML = msg;
 
-    if (msg)
-        input.classList.add("is-invalid");
-    else 
-        input.classList.remove("is-invalid");
+    // if (msg)
+    //     input.classList.add("is-invalid");
+    // else 
+    //     input.classList.remove("is-invalid");
+    input.classList.remove("is-invalid");
+
 
     input.setCustomValidity(msg);
 }
