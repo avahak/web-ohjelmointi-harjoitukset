@@ -9,6 +9,8 @@ require_once "tokens.php";
 
 init();
 
+// TODO FIX että tarkistetaan status!
+
 $user_id = null;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"] ?? "";

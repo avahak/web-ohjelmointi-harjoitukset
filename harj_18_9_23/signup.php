@@ -3,7 +3,7 @@
 // use this to output some extra info for debugging:
 define('DEBUG_MODE', 1);
 
-require_once "../sql_connect.php";
+require_once "init.php";
 require_once "validation_php.php";
 require_once "user_operations.php";
 require_once "send_mail.php";
@@ -28,8 +28,7 @@ function add_validation_class($field) {
     return;
 }
 
-// Used to replace generic client-side validation error 
-// with a more specific server-side validation error
+// Used to display server-side validation errors
 function custom_feedback($field) {
     global $is_invalid_list;
     if (array_key_exists($field, $is_invalid_list))

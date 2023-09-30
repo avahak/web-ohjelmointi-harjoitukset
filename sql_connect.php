@@ -7,9 +7,14 @@ class SqlConnection {
     private $conn;
     private $logger;
 
-    function __construct($db) {
+    // Creates a new mysqli object. Use null as parameter when 
+    // you want to create a database-independent connection:
+    function __construct($db=null) {
         $this->logger = new Logger();
-        $this->conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
+        if ($db)
+            $this->conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
+        else 
+            $this->conn = new mysqli(SERVER, USERNAME, PASSWORD);
         if ($this->conn->connect_error) {
             $this->logger->error("SQL connection failed.", ["db" => $db, "error" => $this->conn->connect_error]);
             exit("SQL connection failed.");

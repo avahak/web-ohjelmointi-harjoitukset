@@ -81,7 +81,7 @@ function validateInput(input) {
     return "";
 }
 
-// Calls validateInput for every input in the field. Returns true if all inputs are valid.
+// Calls validateInput for every input in the form. Returns true if all inputs are valid.
 function validateForm(form) {
     let inputFields = form.querySelectorAll("input, select, textarea");
     let isValid = true;
