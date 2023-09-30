@@ -1,5 +1,5 @@
 {
-    "FORM_ID": "my_form",
+    "FORM_ID": "signup_form",
 
     "VALIDATION_DEFAULT_MESSAGES": {
         "required": "%1 is required.",

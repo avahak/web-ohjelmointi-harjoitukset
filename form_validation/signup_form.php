@@ -5,6 +5,7 @@ require_once "./validation/template_inputs.php";
 
 // Custom validation for cases that are not covered by the json file:
 function my_custom_validation() {
+    // Fail half of emails adresses:
     if (ord(md5($_POST["email"] ?? "")[0])%2 == 0) {
         invalidate("email", "Sorry, that email is already in use.");
     }
@@ -17,7 +18,7 @@ function my_validation_pass() {
 }
 
 // Initialize the php script:
-init_validation("./login_form.json");
+init_validation("./signup_form.json");
 // Validate the form (this does nothing if there is no data in POST):
 validate("my_custom_validation", "my_validation_pass");
 ?>
@@ -42,8 +43,8 @@ validate("my_custom_validation", "my_validation_pass");
 <body class="bg-secondary text-light">
 
 <div class="container mt-3 p-3 bg-light text-dark" style="max-width:600px;">
-    <form id="my_form" class="needs-validation <?php echo ($_SERVER["REQUEST_METHOD"] == "POST" ? "was-validated" : ""); ?>" novalidate method="POST">
-        <h2>Log in</h2>
+    <form id="signup_form" class="needs-validation <?php echo ($_SERVER["REQUEST_METHOD"] == "POST" ? "was-validated" : ""); ?>" novalidate method="POST">
+        <h2>Sign up</h2>
 
         <div class="mt-3">
             <?php template_input("email", "email", "Email Input", "Email Placeholder", "col-12 col-sm-4", "col-12 col-sm-8"); ?>
