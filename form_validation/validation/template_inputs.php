@@ -1,10 +1,6 @@
 <?php
 
-// TODO could allow checkboxes, radio button go in a rows of M, instead of block/inline
-
-// example forms: https://getbootstrap.com/docs/5.0/forms/validation/
-
-// If no special visual appearance is needed, these templates can be used for 
+// If special visual appearance is not needed, these templates can be used for 
 // fast form setup.
 
 // Add the feedback div:
@@ -18,10 +14,11 @@ function template_custom_feedback_div($name) {
         custom_feedback($name) . "</div>";
 }
 
-// Template for a input with type text/email/password/number
+// Template for a input with type text/email/password/number:
 function template_input($type, $name, $label, $placeholder, $label_class, $input_class) {
+    $user_modified = user_modified($name);
     $validity = validation_class($name);
-    $value = ($type == "password" ? "" : recall($name, true));
+    $value = recall($name, true);
     $feedback_div = template_custom_feedback_div($name);
     echo <<<HTML
         <div class="row">
@@ -29,16 +26,33 @@ function template_input($type, $name, $label, $placeholder, $label_class, $input
                 <label for="$name" class="form-label">$label</label>
             </div>
             <div class="$input_class">
-                <input type="$type" class="form-control $validity" id="$name" name="$name" placeholder="$placeholder" value="$value">
+                <input type="$type" class="form-control $validity $user_modified" id="$name" name="$name" placeholder="$placeholder" value="$value">
                 $feedback_div
             </div>
         </div>
         HTML;
 }
 
-// NOTE! invalid-feedback div goes in the same div as the last input or it won't show up.
-// BUG form-check-inline makes invalid-feedback go in wrong place. https://github.com/twbs/bootstrap/issues/25540
+// Template for a textarea:
+function template_textarea($name, $label, $placeholder, $rows) {
+    $user_modified = user_modified($name);
+    $validity = validation_class($name);
+    $value = recall($name, true);
+    $feedback_div = template_custom_feedback_div($name);
+    echo <<<HTML
+        <div class="form-group">
+            <label for="$name" class="form-label">$label</label>
+            <div>
+                <textarea class="form-control $validity $user_modified" rows="$rows" id="$name" name="$name" placeholder="$placeholder">$value</textarea>
+            </div>
+            $feedback_div
+        </div>
+        HTML;
+}
+
+// Template for radio button. Use $form_check_inline=true to put options on same line.
 function template_radio($name, $label, $options, $form_check_inline) {
+    $user_modified = user_modified($name);
     $validity = validation_class($name);
     $value = recall($name, false);
     $feedback_div = template_custom_feedback_div($name);
@@ -54,7 +68,7 @@ function template_radio($name, $label, $options, $form_check_inline) {
         $checked = ($option == $value ? "checked" : "");
         echo <<<HTML
             <div class="form-check $inline">
-                <input class="form-check-input $validity" type="radio" name="$name" id="{$name}{$k}" value="$option" $checked>
+                <input class="form-check-input $validity $user_modified" type="radio" name="$name" id="{$name}{$k}" value="$option" $checked>
                 <label class="form-check-label" for="{$name}{$k}">
                     $option
                 </label>
@@ -67,6 +81,7 @@ function template_radio($name, $label, $options, $form_check_inline) {
 
 // Template for select
 function template_select($name, $label, $options, $disabled_indexes, $selected_index=0) {
+    $user_modified = user_modified($name);
     $validity = validation_class($name);
     $feedback_div = template_custom_feedback_div($name);
     $value = recall($name, false);
@@ -74,7 +89,7 @@ function template_select($name, $label, $options, $disabled_indexes, $selected_i
     echo <<<HTML
         <div>
             $label_html
-            <select class="form-select $validity" id="$name" name="{$name}">
+            <select class="form-select $validity $user_modified" id="$name" name="{$name}">
         HTML;
     for ($k = 0; $k < count($options); $k++) {
         $option = $options[$k];
@@ -90,7 +105,9 @@ function template_select($name, $label, $options, $disabled_indexes, $selected_i
     echo "</div>";
 }
 
+// Template for checkboxes
 function template_checkbox($name, $label, $options, $form_check_inline) {
+    $user_modified = user_modified($name);
     $validity = validation_class($name);
     $feedback_div = template_custom_feedback_div($name);
     $values = recall($name, false);
@@ -102,7 +119,7 @@ function template_checkbox($name, $label, $options, $form_check_inline) {
         $checked = (($values && in_array($option, $values)) ? "checked" : "");
         echo <<<HTML
             <div class="form-check $inline">
-                <input class="form-check-input $validity" $checked type="checkbox" id="{$name}{$k}" name="{$name}[]" value="$option">
+                <input class="form-check-input $validity $user_modified" $checked type="checkbox" id="{$name}{$k}" name="{$name}[]" value="$option">
                 <label class="form-check-label" for="{$name}{$k}">$option</label>
             </div>
             HTML;
@@ -112,13 +129,13 @@ function template_checkbox($name, $label, $options, $form_check_inline) {
 }
 
 // TODO for a file: can check size, extension, check if it is an actual image
-function template_file($name, $label, $extensions) {
-    echo <<<HTML
-        <div class="mb-3">
-            <label for="fileInput" class="form-label">$label</label>
-            <input type="file" class="form-control" name="file" id="file">
-        </div>
-        HTML;
-}
+// function template_file($name, $label, $extensions) {
+//     echo <<<HTML
+//         <div class="mb-3">
+//             <label for="fileInput" class="form-label">$label</label>
+//             <input type="file" class="form-control" name="file" id="file">
+//         </div>
+//         HTML;
+// }
 
 ?>

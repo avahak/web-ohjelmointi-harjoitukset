@@ -11,7 +11,8 @@
         "max": "%1 is too high (maximum is %2).",
         "force_equality": "Non-matching value.",
         "min_selected": "%1 has too few selected (minimum is %2).",
-        "max_selected": "%1 has too many selected (maximum is %2)."
+        "max_selected": "%1 has too many selected (maximum is %2).",
+        "prevent_recall": "Please re-enter your input."
     },
 
     "VALIDATION_RULES": {
@@ -43,10 +44,17 @@
             "min_length": 3,
             "max_length": 30,
             "pattern1": "(?=.*[A-Za-z0-9])",
-            "pattern2": "(?=.*[^A-Za-z0-9])"
+            "pattern2": "(?=.*[^A-Za-z0-9])",
+            "prevent_recall": true
         },
         "pw2": {
-            "force_equality": "pw"
+            "force_equality": "pw",
+            "prevent_recall": true
+        },
+        "textarea": {
+            "required": true,
+            "min_length": 10,
+            "max_length": 11
         }
     },
 
@@ -74,16 +82,25 @@
             "max_selected": "You are carrying too many weapons (max %2)!"
         },
         "agreeCheckbox": {
-            "text": "agreement"
+            "text": "agreement",
+            "required": "Please agree to the conditions."
         },
         "pw": {
             "text": "password",
             "pattern1": "%1 needs to contain at least one regular character.",
-            "pattern2": "%1 needs to contain at least one special character."
+            "pattern2": "%1 needs to contain at least one special character.",
+            "prevent_recall": "Please retype password."
         },
         "pw2": {
             "text": "password (confirmation)",
-            "force_equality": "Passwords do not match."
+            "force_equality": "Passwords do not match.",
+            "prevent_recall": "Please retype password."
+        },
+        "textarea": {
+            "text": "story",
+            "required": "Telling your Life Story is mandatory!",
+            "min_length": "Tell me more!",
+            "max_length": "Ok, too much information!"
         }
     }
 }  

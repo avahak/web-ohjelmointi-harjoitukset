@@ -8,7 +8,7 @@ function my_custom_validation() {
     // echo "</br>Performing custom validation:";
 
     if (($_POST["select"] ?? "") == "Cat")
-        invalidate("select", "Sorry, the cat was taken by another user!");
+        invalidate("select", "Sorry, the cat was already taken! Pick another.");
 
     if (isset($_POST["checkbox"]))
         if (in_array("Kitten", $_POST["checkbox"]) && in_array("Sword", $_POST["checkbox"]))
@@ -17,7 +17,7 @@ function my_custom_validation() {
 
 // Code that is executed on form submit if it passes all validation:
 function my_validation_pass() {
-    echo "<h2></br>Form passed automatic validation and custom validation.";
+    echo "<h2></br>Form passed validation with JSON rules and custom validation.";
     echo "</br>Here user could be informed of success or redirected to some other page.</h2>";
     exit();
 }
@@ -33,7 +33,7 @@ validate("my_custom_validation", "my_validation_pass");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Model Form</title>
+    <title>Generic Form</title>
 
     <!-- Bootstrap: -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -83,10 +83,12 @@ validate("my_custom_validation", "my_validation_pass");
         </div>
 
         <div class="mt-3">
-            <?php template_checkbox("agreeCheckbox", "", ["I agree to the Terms and Services"], true); ?>
+            <?php template_textarea("textarea", "Tell me your Life Story", "Life Story", 3); ?>
         </div>
 
-        <!-- <?php template_file("file", "Upload a Photo", "photo"); ?> // TODO NOT IMPLEMENTED -->
+        <div class="mt-3">
+            <?php template_checkbox("agreeCheckbox", "", ["I agree to the Terms and Services"], true); ?>
+        </div>
 
         <div class="mt-3">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -94,9 +96,9 @@ validate("my_custom_validation", "my_validation_pass");
 
     </form>
     <div class="mt-3">
-        <a href="about:blank">A Link</a>
+        <a href="about:blank">Back to Blank Page</a>
     </div>
-    <!-- <?php create_alert(false); ?> -->
+    <?php create_alert(false); ?>
 
 </div>
 

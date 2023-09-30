@@ -28,7 +28,7 @@ validate("my_custom_validation", "my_validation_pass");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Model Form</title>
+    <title>Signup Form</title>
 
     <!-- Bootstrap: -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -46,13 +46,13 @@ validate("my_custom_validation", "my_validation_pass");
     <form id="signup_form" class="needs-validation <?php echo ($_SERVER["REQUEST_METHOD"] == "POST" ? "was-validated" : ""); ?>" novalidate method="POST">
         <h2>Sign up</h2>
 
-        <div class="mt-3">
-            <?php template_input("email", "email", "Email Input", "Email Placeholder", "col-12 col-sm-4", "col-12 col-sm-8"); ?>
+        <div class="mt-4">
+            <?php template_input("email", "email", "Email", "Email Placeholder", "col-12 col-sm-3", "col-12 col-sm-9"); ?>
         </div>
         
         <div class="row mt-3">
             <div class="col-sm-6">
-                <?php template_input("password", "pw", "Password Input", "Password Placeholder", "col-12", "col-12"); ?>
+                <?php template_input("password", "pw", "Password", "Password Placeholder", "col-12", "col-12"); ?>
             </div>
             <div class="col-sm-6">
                 <?php template_input("password", "pw2", "Password (Confirmation)", "Password Placeholder", "col-12", "col-12"); ?>
@@ -64,11 +64,11 @@ validate("my_custom_validation", "my_validation_pass");
         </div>
 
     </form>
-    <div class="mt-3">
-        <a href="about:blank">A Link</a>
+    <div class="my-3">
+        <a href="about:blank">Back to Blank Page</a>
     </div>
 
-    <!-- <?php create_alert(false); ?> -->
+    <?php create_alert(false); ?>
 
 </div>
 
