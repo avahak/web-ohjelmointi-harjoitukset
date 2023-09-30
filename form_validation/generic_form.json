@@ -1,0 +1,106 @@
+{
+    "FORM_ID": "generic_form",
+
+    "VALIDATION_DEFAULT_MESSAGES": {
+        "required": "%1 is required.",
+        "pattern": "Regex mismatch.",
+        "min_length": "%1 is too short (minimum is %2).",
+        "max_length": "%1 is too long (maximum is %2).",
+        "numeric": "%1 needs to be numeric.",
+        "min": "%1 is too low (minimum is %2).",
+        "max": "%1 is too high (maximum is %2).",
+        "force_equality": "Non-matching value.",
+        "min_selected": "%1 has too few selected (minimum is %2).",
+        "max_selected": "%1 has too many selected (maximum is %2).",
+        "prevent_recall": "Please re-enter your input."
+    },
+
+    "VALIDATION_RULES": {
+        "name": {
+            "required": true,
+            "min_length": 2,
+            "max_length": 20
+        },
+        "email": {
+            "required": true,
+            "pattern": "^[a-zA-Z0-9\\._%+\\-]+@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,}$"
+        },
+        "radio": {
+            "required": true
+        },
+        "select": {
+            "required": true
+        },
+        "checkbox": {
+            "required": true,
+            "min_selected": 2,
+            "max_selected": 3
+        },
+        "agreeCheckbox": {
+            "required": true
+        },
+        "pw": {
+            "required": true,
+            "min_length": 3,
+            "max_length": 30,
+            "pattern1": "(?=.*[A-Za-z0-9])",
+            "pattern2": "(?=.*[^A-Za-z0-9])",
+            "prevent_recall": true
+        },
+        "pw2": {
+            "force_equality": "pw",
+            "prevent_recall": true
+        },
+        "textarea": {
+            "required": true,
+            "min_length": 10,
+            "max_length": 11
+        }
+    },
+
+    "VALIDATION_TRIGGERS": {
+        "pw": ["pw2"]
+    },
+
+    "VALIDATION_MESSAGES": {
+        "name": {
+            "text": "first name"
+        },
+        "email": {
+            "text": "email",
+            "pattern": "%1 needs to be a valid email address."
+        },
+        "radio": {
+            "text": "color"
+        },
+        "select": {
+            "text": "pet"
+        },
+        "checkbox": {
+            "text": "weapon", 
+            "min_selected": "It is dangerous out there. Pick at least %2!",
+            "max_selected": "You are carrying too many weapons (max %2)!"
+        },
+        "agreeCheckbox": {
+            "text": "agreement",
+            "required": "Please agree to the conditions."
+        },
+        "pw": {
+            "text": "password",
+            "pattern1": "%1 needs to contain at least one regular character.",
+            "pattern2": "%1 needs to contain at least one special character.",
+            "prevent_recall": "Please retype password."
+        },
+        "pw2": {
+            "text": "password (confirmation)",
+            "force_equality": "Passwords do not match.",
+            "prevent_recall": "Please retype password."
+        },
+        "textarea": {
+            "text": "story",
+            "required": "Telling your Life Story is mandatory!",
+            "min_length": "Tell me more!",
+            "max_length": "Ok, too much information!"
+        }
+    }
+}  

@@ -1,0 +1,78 @@
+.container {
+    max-width: 700px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: #333;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333; /* Label text color for better readability */
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.form-control {
+    border-radius: 5px;
+    border-color: #333; /* Add a border to input fields for better visibility */
+}
+
+.form-control:focus {
+    border-color: #007bff; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box shadow on focus */
+}
+
+/* Style select elements */
+.selectpicker {
+    border-radius: 5px;
+    border-color: #333;
+}
+
+.selectpicker:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Style select options */
+.selectpicker option {
+    background-color: #ffffff;
+    color: #333;
+}
+
+/* Style checkbox input boxes */
+.form-check-input[type="checkbox"] {
+    border-radius: 5px;
+    border-color: #333;
+}
+
+/* Style radio input circles */
+.form-check-input[type="radio"] {
+    border-radius: 50%; /* Makes the radio button a circle */
+    border-color: #333;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+}
+
+/* Make the input fields, select elements, and checkboxes/radio buttons stand out more */
+.form-control,
+.selectpicker,
+.form-check-input[type="checkbox"],
+.form-check-input[type="radio"],
+.btn-primary {
+    margin-bottom: 10px;
+}
