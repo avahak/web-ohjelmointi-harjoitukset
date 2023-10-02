@@ -230,6 +230,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // If input was already validated, keep doing it:
             if (inputWasValidated(input)) {
+                console.log("input event on", input)
                 validateInput(form, input);
                 // Go through VALIDATION_TRIGGERS for the input 
                 // to see if we need to validate other inputs as well:
