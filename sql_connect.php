@@ -1,5 +1,8 @@
 <?php
 
+// Note, it is possible to prepare multiple queries before execute, 
+// see https://stackoverflow.com/a/11635679
+
 require_once "config/sql_config.php";    // this just defines SERVER, USERNAME, PASSWORD
 require_once "logs/logger.php";
 

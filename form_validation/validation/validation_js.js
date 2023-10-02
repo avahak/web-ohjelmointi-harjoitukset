@@ -21,13 +21,14 @@ function cutBrackets(str) {
     return (str.endsWith("[]") ? str.substring(0, str.length-2) : str);
 }
 
+// Returns true iff input was validated already.
+function inputWasValidated(input) {
+    return (input.classList.contains("is-valid") || input.classList.contains("is-invalid"));
+}
+
 // Updates the validation status of the input to msg. 
 function updateValidationMessage(form, input, msg) {
     // console.log("updateValidationMessage", input.id, input.name, input.type, msg);
-    if (msg)
-        input.classList.add("is-invalid");
-    else 
-        input.classList.add("is-valid");
     let feedbackId = cutBrackets(input.name) + "-feedback";
     let div = document.getElementById(feedbackId);
     if (!div) 
@@ -43,6 +44,14 @@ function updateValidity(form, name, msg) {
     // console.log("inputsWithSameName", inputsWithSameName);
     for (const inputNamesake of inputsWithSameName) {
         // console.log("updateValidity found element", inputNamesake);
+        if (msg) {
+            inputNamesake.classList.add("is-invalid");
+            inputNamesake.classList.remove("is-valid");
+        }
+        else {
+            inputNamesake.classList.add("is-valid");
+            inputNamesake.classList.remove("is-invalid");
+        }
         inputNamesake.setCustomValidity(msg);
     }
 }
@@ -70,6 +79,8 @@ function validateInput(form, input) {
 
     let name = cutBrackets(input.name);
     let rules = VALIDATION_JSON.VALIDATION_RULES[name];
+    if (!rules)
+        return "";
 
     for (let ruleName in rules) {
         let ruleValue = rules[ruleName];
@@ -173,35 +184,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 event.stopPropagation();
             }
         }
-        form.classList.add("was-validated");
     });
 
     // Inputs with errors do not show automatically as red after server-side validation 
     // since even though their feedback divs contain errors, setCustomValidity has 
     // not been called. Call it here if needed:
     let inputFields = form.querySelectorAll("input, select, textarea");
-    if (form.classList.contains("was-validated")) {
-        inputFields.forEach(function(input) {
-            let name = cutBrackets(input.name);
-            let feedbackId = name + "-feedback";
-            let div = document.getElementById(feedbackId);
-            if (!div)
-                return;
-            if (input.classList.contains("user-modified")) {
-                if (VALIDATION_JSON.VALIDATION_RULES[name]?.prevent_recall) {
-                    // Input was modified and prevented from recall.
+    inputFields.forEach(function(input) {
+        if (!inputWasValidated(input)) 
+            return;
+        let name = cutBrackets(input.name);
+        let feedbackId = name + "-feedback";
+        let div = document.getElementById(feedbackId);
+        if (!div)
+            return;
+        if (input.classList.contains("user-modified")) {
+            if (VALIDATION_JSON.VALIDATION_RULES[name]?.prevent_recall) 
+                if (div.innerHTML.length == 0) {
+                    // Input was modified and prevented from recall and feedback is empty.
                     // Therefore we should tell the user to refill it.
                     div.innerHTML = VALIDATION_JSON.VALIDATION_MESSAGES[name]?.prevent_recall 
                         ?? VALIDATION_JSON.VALIDATION_DEFAULT_MESSAGES.prevent_recall;
                 }
-            }
-            if (input.classList.contains("is-invalid")) {
-                // Update validity for invalid inputs directly after server-side validation:
-                // (Without this we get green boxes and red errors under.)
-                updateValidity(form, input.name, div.innerHTML);
-            }
-        });
-    }
+        }
+        if (input.classList.contains("is-invalid")) {
+            // Update validity for invalid inputs directly after server-side validation:
+            // (Without this we get green boxes and red errors under.)
+            updateValidity(form, input.name, div.innerHTML);
+        }
+    });
 
     // Listen to inputs:
     inputFields.forEach(function(input) {
@@ -217,8 +228,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     close.click();
             });
 
-            // If form was already submitted, start validating on input event:
-            if (form.classList.contains('was-validated')) {
+            // If input was already validated, keep doing it:
+            if (inputWasValidated(input)) {
                 validateInput(form, input);
                 // Go through VALIDATION_TRIGGERS for the input 
                 // to see if we need to validate other inputs as well:

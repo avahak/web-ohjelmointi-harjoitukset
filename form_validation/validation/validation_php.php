@@ -106,7 +106,7 @@ function json_validate($arr) {
                 $name_text = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_MESSAGES"][$name]["text"] ?? $name;
                 $msg = str_replace("%1", $name_text, $msg);
                 $msg = str_replace("%2", $rule_value, $msg);
-                $GLOBALS["invalidate_errors"][$name] = ucfirst($msg);
+                invalidate($name, ucfirst($msg));
                 break;
             }
         }
@@ -119,6 +119,8 @@ function validation_class($name) {
         return "";          // form is fresh - do nothing
     if (array_key_exists($name, $GLOBALS["invalidate_errors"]))
         return "is-invalid";    // an error message exists for the field - invalid
+    if (!array_key_exists($name, $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"]))
+        return "";      // no rules for field - do not attempt to validate
     if (recall($name, false) != ($_POST[$name] ?? ""))
         return "is-invalid";    // recall prevented and input nonempty - invalid  
     return "is-valid";  // default to valid

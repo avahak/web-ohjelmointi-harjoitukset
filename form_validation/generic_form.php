@@ -48,7 +48,7 @@ validate("my_custom_validation", "my_validation_pass");
 <body class="bg-secondary text-light">
 
 <div class="container mt-3 p-3 bg-light text-dark" style="max-width:600px;">
-    <form id="generic_form" class="needs-validation <?php echo ($_SERVER["REQUEST_METHOD"] == "POST" ? "was-validated" : ""); ?>" novalidate method="POST">
+    <form id="generic_form" class="needs-validation" novalidate method="POST">
         <h2>Generic Form</h2>
 
         <input type="hidden" id="hidden" name="hidden" value="hidden_value">
@@ -98,7 +98,8 @@ validate("my_custom_validation", "my_validation_pass");
     <div class="mt-3">
         <a href="signup_form.php">Other Form</a>
     </div>
-    <?php create_alert(false); ?>
+
+    <!-- <?php create_alert(true); ?> -->
 
 </div>
 
