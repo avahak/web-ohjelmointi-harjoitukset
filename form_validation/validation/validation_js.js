@@ -29,12 +29,17 @@ function inputWasValidated(input) {
 // Updates the validation status of the input to msg. 
 function updateValidationMessage(form, input, msg) {
     // console.log("updateValidationMessage", input.id, input.name, input.type, msg);
-    let feedbackId = cutBrackets(input.name) + "-feedback";
-    let div = document.getElementById(feedbackId);
+    let div = getFeedbackDiv(input);
     if (!div) 
         return;
     div.innerHTML = msg;
     updateValidity(form, input.name, msg);
+}
+
+// Returns the custom-invalid-feedback div associated with the input.
+function getFeedbackDiv(input) {
+    let feedbackId = cutBrackets(input.name) + "-feedback";
+    return document.getElementById(feedbackId);
 }
 
 // Update all inputs with same name (multiple in case of radio/checkbox):
@@ -194,8 +199,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!inputWasValidated(input)) 
             return;
         let name = cutBrackets(input.name);
-        let feedbackId = name + "-feedback";
-        let div = document.getElementById(feedbackId);
+        let div = getFeedbackDiv(input);
         if (!div)
             return;
         if (input.classList.contains("user-modified")) {

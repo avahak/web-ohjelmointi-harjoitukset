@@ -25,7 +25,9 @@ function init_validation($file) {
 // the JSON file. If no errors were found, performs custom validation by calling 
 // $custom_validation. If custom validation does not add any errors by calling invalidate, 
 // then form passes all validation and $validation_pass is called.
-function validate(callable $custom_validation, callable $validation_pass) {
+// NOTE: PHP allows you to provide default values of null for parameters with type 
+//       declarations, even if the type declaration would normally prevent null values.
+function validate(callable $custom_validation=null, callable $validation_pass=null) {
     // Server-side validation goes here:
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check validation rules defined in the JSON file:
@@ -33,12 +35,14 @@ function validate(callable $custom_validation, callable $validation_pass) {
 
         if (!$GLOBALS["invalidate_errors"]) {
             // Form passes JSON validation rules, perform custom validation:
-            $custom_validation();
+            if ($custom_validation)
+                $custom_validation();
         }
 
         if (!$GLOBALS["invalidate_errors"]) {
             // Form passes all validation:
-            $validation_pass();
+            if ($validation_pass)
+                $validation_pass();
         }
     }
 }
