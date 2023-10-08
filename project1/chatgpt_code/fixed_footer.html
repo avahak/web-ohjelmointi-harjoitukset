@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 60px; /* Adjust this value to match your footer's height */
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+    height: 60px; /* Set the same height as padding-bottom in body */
+}
+</style>
+</head>
+<body>
+
+<h2>Fixed/Sticky Footer Example</h2>
+<p>The footer is placed at the bottom of the page.</p>
+
+<div class="footer">
+    <p>Footer</p>
+</div>
+
+</body>
+</html>
+<!-- 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    function setFooterHeight() {
+        const footerHeight = $('.footer').outerHeight();
+        $('.main-content').css('min-height', `calc(100vh - ${footerHeight}px)`);
+    }
+
+    // Call the function on page load and window resize
+    setFooterHeight();
+    $(window).resize(setFooterHeight);
+});
+</script> -->

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram Display</title>
+    <style>
+        /* CSS styles for the canvas containers */
+        .diagram-container {
+            width: 400px; /* Adjust the width as needed */
+            height: 300px; /* Adjust the height as needed */
+            margin: 20px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- First Diagram Container -->
+    <div class="diagram-container" id="diagram-container-1">
+        <canvas id="canvas-1" width="400" height="300" data-diagram-url="./test.json"></canvas>
+    </div>
+
+    <!-- Second Diagram Container -->
+    <div class="diagram-container" id="diagram-container-2">
+        <canvas id="canvas-2" width="400" height="300" data-diagram-url="./test.json"></canvas>
+    </div>
+
+    <!-- Third Diagram Container -->
+    <div class="diagram-container" id="diagram-container-3">
+        <canvas id="canvas-3" width="400" height="300" data-diagram-url="./test.json"></canvas>
+    </div>
+
+    <script>
+        // JavaScript code to draw diagrams
+        function drawDiagram(canvasId, diagramUrl) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+
+            // Load diagram parameters via AJAX
+            fetch(diagramUrl)
+                .then(response => response.json())
+                .then(diagramParams => {
+                    // Use diagramParams to draw the diagram on the canvas
+                    // Your drawing logic here
+                    // For simplicity, let's draw a red circle as a placeholder
+                    ctx.fillStyle = 'red';
+                    ctx.beginPath();
+                    ctx.arc(100, 100, 50, 0, 2 * Math.PI);
+                    ctx.fill();
+                })
+                .catch(error => {
+                    console.error('Error loading diagram parameters:', error);
+                });
+        }
+
+        // Draw diagrams:
+        drawDiagram('canvas-1', document.getElementById('canvas-1').getAttribute('data-diagram-url'));
+
+        drawDiagram('canvas-2', document.getElementById('canvas-2').getAttribute('data-diagram-url'));
+
+        drawDiagram('canvas-3', document.getElementById('canvas-3').getAttribute('data-diagram-url'));
+    </script>
+</body>
+</html>

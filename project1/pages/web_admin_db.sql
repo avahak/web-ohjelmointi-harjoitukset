@@ -1,0 +1,24 @@
+DROP TABLE IF EXISTS tokens;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    firstname VARCHAR(32) NOT NULL, 
+    lastname VARCHAR(64) NOT NULL, 
+    email VARCHAR(128) UNIQUE NOT NULL,
+    phone VARCHAR(16),
+    -- BCrypt always generates 60 characters long but leave space if PASSWORD_DEFAULT changes 
+    pw_hash VARCHAR(255) NOT NULL,
+    status ENUM('ACTIVE', 'INACTIVE', 'UNVERIFIED') NOT NULL DEFAULT 'UNVERIFIED'
+) ENGINE=InnoDB;
+
+CREATE TABLE tokens (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    token_type ENUM('REMEMBER_ME', 'EMAIL_VERIFICATION', 'RESET_PASSWORD') NOT NULL,
+    selector VARCHAR(16) UNIQUE NOT NULL,
+    validator_hash VARCHAR(255) NOT NULL,
+    expiry DATETIME NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

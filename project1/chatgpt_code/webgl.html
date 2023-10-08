@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Circle Renderer</title>
+</head>
+<body>
+    <canvas id="circleCanvas" width="400" height="400"></canvas>
+
+    <script>
+        // Get the WebGL rendering context
+        const canvas = document.getElementById("circleCanvas");
+        const gl = canvas.getContext("webgl");
+
+        // Check if WebGL is available
+        if (!gl) {
+            alert("WebGL is not supported by your browser.");
+        }
+
+        // Define vertex and fragment shaders
+        const vertexShaderSource = `
+            attribute vec2 coordinates;
+            void main(void) {
+                gl_Position = vec4(coordinates, 0.0, 1.0);
+                gl_PointSize = 50.0;
+            }`;
+
+        const fragmentShaderSource = `
+            void main(void) {
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
+            }`;
+
+        // Create shader programs
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertexShaderSource);
+        gl.compileShader(vertexShader);
+
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragmentShaderSource);
+        gl.compileShader(fragmentShader);
+
+        const shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+        gl.useProgram(shaderProgram);
+
+        // Initial position of the circle
+        let circleX = 0.0;
+        let circleY = 0.0;
+
+        // Define the circle's vertices
+        const vertices = new Float32Array([circleX, circleY]);
+
+        // Create a buffer for the vertices
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        // Get the coordinates attribute location
+        const coord = gl.getAttribLocation(shaderProgram, "coordinates");
+        gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(coord);
+
+        // Clear the canvas and draw the circle
+        function drawCircle() {
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.POINTS, 0, 1);
+        }
+
+        // Function to handle user clicks
+        canvas.addEventListener("click", (event) => {
+            // Get the click coordinates relative to the canvas
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            // Update the circle's position
+            circleX = (mouseX / canvas.width) * 2 - 1; // Convert to WebGL coordinates
+            circleY = -(mouseY / canvas.height) * 2 + 1;
+
+            // Update the vertices with the new circle position
+            vertices[0] = circleX;
+            vertices[1] = circleY;
+            
+            // Update the buffer data
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            // Redraw the circle at the new position
+            drawCircle();
+        });
+
+        // Initial drawing of the circle
+        drawCircle();
+    </script>
+</body>
+</html>
