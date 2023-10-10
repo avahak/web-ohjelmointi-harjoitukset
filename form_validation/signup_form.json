@@ -12,7 +12,11 @@
         "force_equality": "Non-matching value.",
         "min_selected": "%1 has too few selected (minimum is %2).",
         "max_selected": "%1 has too many selected (maximum is %2).",
-        "prevent_recall": "Please re-enter your input."
+        "prevent_recall": "Please re-enter your input.",
+        "max_size_mb": "File is too big (maximum is %2 MB).",
+        "accept_extensions": "Invalid file extension (allowed types: %2).",
+        "verify_is_image": "File needs to be an image.",
+        "store_file": "File %f received."
     },
 
     "VALIDATION_RULES": {

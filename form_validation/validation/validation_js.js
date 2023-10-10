@@ -318,8 +318,8 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         if (input.classList.contains("user-modified")) {
             console.log("DEBUG: ", input, div.innerHTML.length);
-            if ((VALIDATION_JSON.VALIDATION_RULES[name]?.prevent_recall) || (!VALIDATION_JSON.VALIDATION_RULES[name]?.store_file))
-                if (div.innerHTML.length == 0) {
+            if ((VALIDATION_JSON.VALIDATION_RULES[name]?.prevent_recall) || (VALIDATION_JSON.VALIDATION_RULES[name]?.store_file === false))
+                if (div.innerHTML.trim().length == 0) {
                     // Input was modified and prevented from recall and feedback is empty.
                     // Therefore we should tell the user to refill it.
                     const msg = VALIDATION_JSON.VALIDATION_MESSAGES[name]?.prevent_recall 

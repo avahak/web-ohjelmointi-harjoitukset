@@ -103,8 +103,8 @@ validate("my_custom_validation", "my_validation_pass");
     </div>
 
     <?php 
-    // create_alert();
-    // create_debug_alert();
+    create_alert();
+    create_debug_alert();
     ?>
 
 </div>
