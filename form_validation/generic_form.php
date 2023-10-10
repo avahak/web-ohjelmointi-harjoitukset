@@ -17,8 +17,9 @@ function my_custom_validation() {
 
 // Code that is executed on form submit if it passes all validation:
 function my_validation_pass() {
-    echo "<h2></br>Form passed validation with JSON rules and custom validation.";
-    echo "</br>Here user could be informed of success or redirected to some other page.</h2>";
+    echo "<h2>Form passed validation with JSON rules and custom validation.";
+    echo "<br>Here user could be informed of success or redirected to some other page.</h2>";
+    echo "<br><a href=".">Back</a>";
     exit();
 }
 
@@ -91,15 +92,20 @@ validate("my_custom_validation", "my_validation_pass");
         </div>
 
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" id="submit_button" class="btn btn-primary">Submit</button>
         </div>
 
     </form>
-    <div class="mt-3">
-        <a href="signup_form.php">Other Form</a>
+
+    <div class="my-3">
+        <a href="signup_form.php">Signup Form</a><br>
+        <a href="file_upload_form.php">File Upload Form</a>
     </div>
 
-    <!-- <?php create_alert(true); ?> -->
+    <?php 
+    // create_alert();
+    // create_debug_alert();
+    ?>
 
 </div>
 

@@ -5,15 +5,15 @@ require_once "./validation/template_inputs.php";
 
 // Custom validation for cases that are not covered by the json file:
 function my_custom_validation() {
-    // Fail half of emails adresses:
-    if (ord(md5($_POST["email"] ?? "")[0])%2 == 0) {
-        invalidate("email", "Sorry, that email is already in use.");
-    }
+    // Reject short emails for testing:
+    if (strlen($_POST["email"]) < 10)
+        invalidate("email", "Email is short - rejected for testing.");
 }
 
 // Code that is executed on form submit if it passes all validation:
 function my_validation_pass() {
-    echo "</br><h2>Form passed all validation!</h2>";
+    echo "<br><h2>Form passed all validation!</h2>";
+    echo "<br><a href=".">Back</a>";
     exit();
 }
 
@@ -60,15 +60,20 @@ validate("my_custom_validation", "my_validation_pass");
         </div>
 
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" id="submit_button" class="btn btn-primary">Submit</button>
         </div>
 
     </form>
+
     <div class="my-3">
-        <a href="generic_form.php">Other Form</a>
+        <a href="generic_form.php">Generic Form</a><br>
+        <a href="file_upload_form.php">File Upload Form</a>
     </div>
 
-    <!-- <?php create_alert(false); ?> -->
+    <?php 
+    // create_alert();
+    // create_debug_alert();
+    ?>
 
 </div>
 

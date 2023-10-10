@@ -128,14 +128,34 @@ function template_checkbox($name, $label, $options, $form_check_inline) {
     echo "</div>";
 }
 
-// TODO for a file: can check size, extension, check if it is an actual image
-// function template_file($name, $label, $extensions) {
-//     echo <<<HTML
-//         <div class="mb-3">
-//             <label for="fileInput" class="form-label">$label</label>
-//             <input type="file" class="form-control" name="file" id="file">
-//         </div>
-//         HTML;
-// }
+// Template for a file upload input.
+function template_file_upload($name, $label) {
+    echo "<label class=\"form-label\" for=\"$name\">$label</label>";
+
+    $uploaded_file = $_SESSION["form_validation_temporary_files"][$name]["original"] ?? ""; 
+    $data_uploaded_file = "";
+    if ($uploaded_file)
+        $data_uploaded_file = "data-uploaded-file=\"" . htmlspecialchars($uploaded_file) . "\"";
+    $vc = validation_class($name);
+    $um = (($_FILE[$name]["name"] ?? "") ? "user-modified" : "");
+    
+    ob_start() ?>
+    <div class="input-group">
+        <input type="file" class="form-control <?= "$um $vc" ?>" name="<?= $name ?>" id="<?= $name ?>" <?= $data_uploaded_file ?>>
+        <button type="button" class="btn btn-secondary" id="<?= $name ?>_reset">Reset</button>
+    </div>
+    <div class="custom-invalid-feedback <?= validation_text_color($name) ?>" id="<?= $name ?>-feedback"><?= custom_feedback($name) ?></div>
+    <?php ob_end_flush();
+}
+
+// Creates an image preview div for a file upload input.
+function template_file_upload_image_preview($name, $label, $max_size) {
+    ob_start() ?>
+    <div id="<?= $name ?>_preview_container" class="d-none">
+        <p class="form-label"><?= $label ?></p>
+        <img id="<?= $name ?>_preview" src="" alt="Image Preview" style="max-width:<?= $max_size ?>px;max-height:<?= $max_size ?>px;width:auto;height:auto;">
+    </div>
+    <?php ob_end_flush();
+}
 
 ?>

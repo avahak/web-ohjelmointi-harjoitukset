@@ -1,0 +1,59 @@
+{
+    "FORM_ID": "file_upload_form",
+
+    "VALIDATION_DEFAULT_MESSAGES": {
+        "required": "%1 is required.",
+        "pattern": "Regex mismatch.",
+        "min_length": "%1 is too short (minimum is %2).",
+        "max_length": "%1 is too long (maximum is %2).",
+        "numeric": "%1 needs to be numeric.",
+        "min": "%1 is too low (minimum is %2).",
+        "max": "%1 is too high (maximum is %2).",
+        "force_equality": "Non-matching value.",
+        "min_selected": "%1 has too few selected (minimum is %2).",
+        "max_selected": "%1 has too many selected (maximum is %2).",
+        "prevent_recall": "Please re-enter your input.",
+        "max_size_mb": "File is too big (maximum is %2 MB).",
+        "accept_extensions": "Invalid file extension (allowed types: %2).",
+        "verify_is_image": "File needs to be an image.",
+        "store_file": "File %f received."
+    },
+
+    "VALIDATION_RULES": {
+        "username": {
+            "required": true,
+            "min_length": 2,
+            "max_length": 20
+        },
+        "image": {
+            "required": true,
+            "max_size_mb": 1.0,
+            "accept_extensions": ["image/*"],
+            "verify_is_image": true,
+            "image_preview": true,
+            "store_file": true
+        },
+        "document": {
+            "required": false,
+            "max_size_mb": 2.0,
+            "accept_extensions": ["application/pdf", ".txt"],
+            "store_file": true
+        },
+        "agreeCheckbox": {
+            "required": true
+        }
+    },
+
+    "VALIDATION_TRIGGERS": {
+    },
+
+    "VALIDATION_MESSAGES": {
+        "username": {
+            "text": "username"
+        },
+        "agreeCheckbox": {
+            "text": "agreement",
+            "required": "Please agree to the conditions."
+        }
+    }
+}  

@@ -13,11 +13,19 @@
 // to the one changed (used with force_equality).
 
 // Reads the validation json file.
-function init_validation($file) {
-    // list of input field names that fail server side validation:
-    $GLOBALS["invalidate_errors"] = [];
+function init_validation($json_file, $temporary_upload_directory="./") {
+    if(!session_id())
+        session_start();
+    if ($_SERVER["REQUEST_METHOD"] != "POST")   // form is fresh
+        $_SESSION["form_validation_temporary_files"] = [];
+    if (!isset($_SESSION["form_validation_temporary_files"]))   // just in case
+        $_SESSION["form_validation_temporary_files"] = [];
+    // List of feedback for invalid fields:
+    $GLOBALS["validation_invalid_feedback"] = [];
 
-    $GLOBALS["VALIDATION_JSON_STRING"] = file_get_contents($file);
+    $GLOBALS["temporary_upload_directory"] = $temporary_upload_directory;
+
+    $GLOBALS["VALIDATION_JSON_STRING"] = file_get_contents($json_file);
     $GLOBALS["VALIDATION_JSON_DECODE"] = json_decode($GLOBALS["VALIDATION_JSON_STRING"], true);
 }
 
@@ -31,16 +39,25 @@ function validate(callable $custom_validation=null, callable $validation_pass=nu
     // Server-side validation goes here:
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check validation rules defined in the JSON file:
-        json_validate($_POST);
+        json_validate();
 
-        if (!$GLOBALS["invalidate_errors"]) {
+        if (!$GLOBALS["validation_invalid_feedback"]) {
             // Form passes JSON validation rules, perform custom validation:
+
+            // Store session variable as global variable to give easy access
+            // in custom_validation and validation_pass:
+            $GLOBALS["form_validation_temporary_files"] = $_SESSION["form_validation_temporary_files"] ?? [];
+
             if ($custom_validation)
                 $custom_validation();
         }
 
-        if (!$GLOBALS["invalidate_errors"]) {
+        if (!$GLOBALS["validation_invalid_feedback"]) {
             // Form passes all validation:
+
+            // Forget the session variable:
+            unset($_SESSION["form_validation_temporary_files"]);
+
             if ($validation_pass)
                 $validation_pass();
         }
@@ -49,20 +66,47 @@ function validate(callable $custom_validation=null, callable $validation_pass=nu
 
 // Marks field with name $name as invalid with given error message.
 function invalidate($name, $message) {
-    $GLOBALS["invalidate_errors"][$name] = $message;
+    $GLOBALS["validation_invalid_feedback"][$name] = $message;
 }
 
-// Validates all fields whose name is in $arr.
-function json_validate($arr) {
-    $GLOBALS["invalidate_errors"] = [];
+// Returns appropriate message for rule (with ruleName, ruleValue) of a field (with name):
+function invalid_feedback_message($name, $rule_name, $rule_value) {
+    $default_msg = (strpos($rule_name, "pattern") === 0) 
+        ? ($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_DEFAULT_MESSAGES"]["pattern"] ?? "") 
+        : ($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_DEFAULT_MESSAGES"][$rule_name] ?? "");
+    $msg = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_MESSAGES"][$name][$rule_name] ?? $default_msg;
+    $name_text = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_MESSAGES"][$name]["text"] ?? $name;
+    $msg = str_replace("%1", $name_text, $msg);
+    $s_rule_value = (is_array($rule_value) ? implode(", ", $rule_value) : $rule_value);
+    return ucfirst(str_replace("%2", $s_rule_value, $msg));
+}
+
+// Returns the value of the input field, or selected file for file input:
+function get_value($name) {
+    $value = $_POST[$name] ?? "";
+    if (!$value)
+        $value = $_FILES[$name]["name"] ?? "";
+    if (!$value)
+        $value = $_SESSION["form_validation_temporary_files"][$name]["original"] ?? "";
+    return $value;
+}
+
+// Validates all fields.
+function json_validate() {
+    $GLOBALS["validation_invalid_feedback"] = [];
 
     foreach ($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"] as $name => $rule) {
-        $value = $arr[$name] ?? "";
+        $value = get_value($name);
+        $store_file = false;    // Only used for files for which "store_file" is true.
+        $combined_image_check = [];     // Combines all checks that require loading an image
         foreach ($rule as $rule_name => $rule_value) {
             $is_valid = true;
 
+                    // if (empty($_FILES[$name]["name"]))
+                    //     if (empty($_SESSION["form_validation_temporary_files"][$name]))
+
             if (($rule_name == "required") && ($rule_value))
-                if ($value === "")
+                if (!$value)
                     $is_valid = false;
 
             if ($rule_name == "min_length")
@@ -90,8 +134,8 @@ function json_validate($arr) {
                     $is_valid = false;
 
             if ($rule_name == "force_equality")
-                if (isset($arr[$rule_value]))
-                    if ($arr[$rule_value] != $value)
+                if (isset($_POST[$rule_value]))
+                    if ($_POST[$rule_value] != $value)
                         $is_valid = false;
 
             if ($rule_name == "min_selected")
@@ -102,47 +146,149 @@ function json_validate($arr) {
                 if (count($value) > $rule_value)
                     $is_valid = false;
 
+            if (isset($_FILES[$name]) && ($_FILES[$name]['error'] == UPLOAD_ERR_OK)) {
+                // User is uploading another file - delete temporary file if we have one:
+                delete_file_if_exists($_SESSION["form_validation_temporary_files"][$name]["temp_file"] ?? null);
+                $_SESSION["form_validation_temporary_files"][$name] = null;
+
+                $tmp_name = $_FILES[$name]['tmp_name'];
+                $file_name = $_FILES[$name]['name'];
+                $file_type = $_FILES[$name]["type"];
+                $file_size = $_FILES[$name]['size'] / 1024.0 / 1024.0;
+
+                if ($rule_name == "max_size_mb") 
+                    if ($file_size > $rule_value)
+                        $is_valid = false;
+
+                if ($rule_name == "accept_extensions") {
+                    $file_extension = "." . strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                    $file_type = strtolower($_FILES[$name]["type"]);
+                    $is_match = false;
+                    foreach ($rule_value as $extension) {
+                        $extension = strtolower($extension);
+                        if (substr($extension, 0, 1) == ".") {
+                            // Extension looks like ".txt":
+                            if ($extension === $file_extension) {
+                                $is_match = true;
+                                break;
+                            }
+                        }
+                        if (substr($extension, -2) == "/*") {
+                            // Extension looks like "image/*":
+                            if (substr($file_type, 0, strlen($extension)-2) == substr($extension, 0, strlen($extension)-2)) {
+                                $is_match = true;
+                                break;
+                            }
+                        }
+                        // Extension looks like "application/pdf":
+                        if ($extension === $file_type) {
+                            $is_match = true;
+                            break;
+                        }
+                    }
+                    if (!$is_match)
+                        $is_valid = false;
+                }
+
+                if (($rule_name == "verify_is_image") && ($rule_value)) 
+                    $combined_image_check["verify_is_image"] = $rule_value;
+
+                if (($rule_name == "store_file") && ($rule_value))
+                    $store_file = true;
+            }
+   
+
             if (!$is_valid) {
-                $default_msg = (strpos($rule_name, "pattern") === 0) 
-                    ? ($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_DEFAULT_MESSAGES"]["pattern"] ?? "") 
-                    : ($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_DEFAULT_MESSAGES"][$rule_name] ?? "");
-                $msg = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_MESSAGES"][$name][$rule_name] ?? $default_msg;
-                $name_text = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_MESSAGES"][$name]["text"] ?? $name;
-                $msg = str_replace("%1", $name_text, $msg);
-                $msg = str_replace("%2", $rule_value, $msg);
-                invalidate($name, ucfirst($msg));
+                $msg = invalid_feedback_message($name, $rule_name, $rule_value);
+                invalidate($name, $msg);
                 break;
             }
         }
+        // Do image checks in one go:
+        if (count($combined_image_check) > 0) {
+            $img_size = @getimagesize($tmp_name);
+            if (!$img_size) {
+                $msg = invalid_feedback_message($name, "verify_is_image", true);
+                invalidate($name, $msg);
+            }
+        }
+        if (($store_file) && (!array_key_exists($name, $GLOBALS["validation_invalid_feedback"]))) {
+            // "store file" is set true and field passes validation - store file
+            store_file($name);
+        }
     }
+    // echo "<br>invalid-feedback: " . var_export($GLOBALS["validation_invalid_feedback"], true);
+}
+
+// Called after file upload validation to store the file temporarily:
+function store_file($name) {
+    if (!isset($_FILES[$name]) || ($_FILES[$name]['error'] != UPLOAD_ERR_OK))
+        return;
+
+    $tmp_name = $_FILES[$name]['tmp_name'];
+    $file_name = $_FILES[$name]['name'];
+
+    $destination_path = $GLOBALS["temporary_upload_directory"] . $name . "_" . bin2hex(random_bytes(6));
+    if (move_uploaded_file($tmp_name, $destination_path)) {
+        $_SESSION["form_validation_temporary_files"][$name] = ["original" => $file_name, "temp_file" => $destination_path];
+    }
+}
+
+// Deletes a file:
+function delete_file_if_exists($file_name) {
+    if (!$file_name)
+        return false;
+    if (!file_exists($file_name))
+        return false;
+    if (!unlink($file_name))
+        return false;
+    return true;
 }
 
 // Used to add class for bootstrap to tell which inputs failed server-side validation.
 function validation_class($name) {
-    if (empty($GLOBALS["invalidate_errors"]))
+    if (!$GLOBALS["validation_invalid_feedback"])
         return "";          // form is fresh - do nothing
-    if (array_key_exists($name, $GLOBALS["invalidate_errors"]))
+    if (array_key_exists($name, $GLOBALS["validation_invalid_feedback"]))
         return "is-invalid";    // an error message exists for the field - invalid
     if (!array_key_exists($name, $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"]))
         return "";      // no rules for field - do not attempt to validate
-    if (recall($name, false) != ($_POST[$name] ?? ""))
+    if (recall($name, false) != get_value($name))
         return "is-invalid";    // recall prevented and input nonempty - invalid  
     return "is-valid";  // default to valid
 }
 
-// Used to display server-side validation errors
+// Returns approppriate bootstrap text color for custom feedback div.
+function validation_text_color($name) {
+    $validation_class = validation_class($name);
+    if ($validation_class == "is-invalid")
+        return "text-danger";
+    if ($validation_class == "is-valid")
+        return "text-success";
+    return "";
+}
+
+// Used to display server-side validation feedback
 function custom_feedback($name) {
-    if (array_key_exists($name, $GLOBALS["invalidate_errors"]))
-        return $GLOBALS["invalidate_errors"][$name];
+    if (array_key_exists($name, $GLOBALS["validation_invalid_feedback"]))
+        return $GLOBALS["validation_invalid_feedback"][$name];
+    if (!empty($_SESSION["form_validation_temporary_files"][$name])) {
+        // Field is valid and the file has been uploaded and stored temporarily:
+        $msg = invalid_feedback_message($name, "store_file", true);
+        $msg = str_replace("%f", $_SESSION["form_validation_temporary_files"][$name]["original"], $msg);
+        return $msg;
+    }
     return "";
 }
 
 // Form data retention helper function:
 function recall($name, $sanitize) {
     $prevent_recall = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"][$name]["prevent_recall"] ?? false;
+    // Also prevent recall for file inputs when "store_file" is set false:
+    $prevent_recall = $prevent_recall || !($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"][$name]["store_file"] ?? true);
     if ($prevent_recall)
         return "";
-    $value = $_POST[$name] ?? "";
+    $value = get_value($name);
     return ($sanitize ? htmlspecialchars($value) : $value);
 }
 
@@ -161,41 +307,43 @@ function include_validation_js($relative_path="./") {
 }
 
 // Creates an alert that contains server-side error messages:
-function create_alert($debug=false) {
+function create_alert() {
     // Do not create an alert for a fresh form:
     if ($_SERVER["REQUEST_METHOD"] != "POST")
         return;
 
-    if ($GLOBALS["invalidate_errors"]) {
-        // found a flaw - report the found flaws to the user
+    $list = "";
+    foreach ($GLOBALS["validation_invalid_feedback"] as $name => $value) 
+        $list = $list . "<li>$value</li>";
+
+    if ($list) {
+        // Found a flaw - report the found flaws to the user
         echo <<<HTML
             <div class="alert alert-danger alert-dismissible" role="alert">
-            <div class="h5">ERROR:</div>
+            <div class="h5">Form submit failed:</div>
             HTML;
-        foreach ($GLOBALS["invalidate_errors"] as $name => $value) 
-            echo "<li>$value</li>";
+        echo $list;
         echo <<<HTML
             <button class="btn-close" aria-label="close" data-bs-dismiss="alert">
             </button></div>
             HTML;
     }
-    if ($debug) {  
-        // make an alert that displays the input values:
-        echo <<<HTML
-            <div class="alert alert-primary alert-dismissible" role="alert">
-            <div class="h5">[DEBUG] Form input:</div>
-            HTML;
-        foreach ($_POST as $key => $value) {
-            if (is_array($value))
-                echo htmlspecialchars($key) . ": " . htmlspecialchars(var_export($value, true)) . "<br>";
-            else
-                echo htmlspecialchars($key) . ": " . htmlspecialchars($value) . "<br>";
-        }
-        echo <<<HTML
-            <button class="btn-close" aria-label="close" data-bs-dismiss="alert">
-            </button></div>
-            HTML;
-    }
+}
+
+// Creates an alert that contains server-side information for debugging:
+function create_debug_alert() {
+    // make an alert that displays the input values:
+    echo <<<HTML
+        <div class="alert alert-primary alert-dismissible" role="alert">
+        <div class="h5">Debug Info:</div>
+        HTML;
+    echo "<p>\$_POST: " . var_export($_POST, true) . "</p>";
+    echo "<p>\$_FILES: " . var_export($_FILES, true) . "</p>";
+    echo "<p>\$_SESSION: " . var_export($_SESSION, true) . "</p>";
+    echo <<<HTML
+        <button class="btn-close" aria-label="close" data-bs-dismiss="alert">
+        </button></div>
+        HTML;
 }
 
 ?>
