@@ -1,6 +1,5 @@
 <?php
 
-require_once "../../config/pepper.php";
 require_once "tokens.php";
 require_once "init.php";
 
@@ -21,14 +20,14 @@ function verify_password($email, $pw) {
                     $user_id = $row["id"];
                 }
     }
-    if ((!$pw_hash) || (!password_verify(PEPPER . $pw, $pw_hash)))
+    if ((!$pw_hash) || (!password_verify($GLOBALS["CONFIG"]["PEPPER"] . $pw, $pw_hash)))
         return false;
     return $user_id;
 }
 
 // Changes the user password 
 function change_password($user_id, $new_pw) {
-    $new_pw_hash = password_hash(PEPPER . $new_pw, PASSWORD_DEFAULT);
+    $new_pw_hash = password_hash($GLOBALS["CONFIG"]["PEPPER"] . $new_pw, PASSWORD_DEFAULT);
     $GLOBALS["g_logger"]->warning("change_password called", compact("user_id", "new_pw"));
     $query = "UPDATE users SET pw_hash=? WHERE id=?";
     $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $new_pw_hash, $user_id);
@@ -66,7 +65,7 @@ function user_data_from_email($email) {
 
 // Adds a new user to the database.
 function add_user($firstname, $lastname, $email, $phone, $pw) {
-    $pw_hash = password_hash(PEPPER . $pw, PASSWORD_DEFAULT);
+    $pw_hash = password_hash($GLOBALS["CONFIG"]["PEPPER"] . $pw, PASSWORD_DEFAULT);
     $query = "INSERT INTO users (firstname, lastname, email, phone, pw_hash) VALUES (?, ?, ?, ?, ?)";
     $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $firstname, $lastname, $email, $phone, $pw_hash);
     // should return user_id?
