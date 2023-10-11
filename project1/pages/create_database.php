@@ -10,7 +10,7 @@ recreate_database();
 require_once "tokens.php";
 require_once "user_operations.php";
 require_once "template_pages.php";
-require_once "send_mail.php";
+// require_once "send_mail.php";
 
 $logger = new Logger();
 
@@ -71,6 +71,6 @@ $firstname = $user_data['firstname'];
 $lastname = $user_data['lastname'];
 $email = user_data_from_id($user_id)['email'];
 
-send_mail("Email verification link", email_template_verification_email($key), "Webteam", $email, $firstname . " " . $lastname, true);
+// send_mail("Email verification link", email_template_verification_email($key), "Webteam", $email, $firstname . " " . $lastname, true);
 
 ?>
