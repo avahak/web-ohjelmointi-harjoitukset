@@ -3,6 +3,8 @@
 // Recreates the database so that we do not have to use phpmyadmin tool.
 // WARNING! All existing info in the database is lost.
 
+require_once "config.php";
+
 require_once "../../sql_connect.php";
 require_once "../../logs/logger.php";
 recreate_database();
@@ -70,6 +72,8 @@ $user_data = user_data_from_id($user_id);
 $firstname = $user_data['firstname'];
 $lastname = $user_data['lastname'];
 $email = user_data_from_id($user_id)['email'];
+
+echo "email: $email";
 
 // send_mail("Email verification link", email_template_verification_email($key), "Webteam", $email, $firstname . " " . $lastname, true);
 
