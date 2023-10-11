@@ -3,7 +3,8 @@
 // Note, it is possible to prepare multiple queries before execute, 
 // see https://stackoverflow.com/a/11635679
 
-require_once "config/sql_config.php";    // this just defines SERVER, USERNAME, PASSWORD
+if (!isset($GLOBALS["CONFIG"]))
+    require_once "config/sql_config.php";
 require_once "logs/logger.php";
 
 class SqlConnection {
@@ -14,10 +15,7 @@ class SqlConnection {
     // you want to create a database-independent connection:
     function __construct($db=null) {
         $this->logger = new Logger();
-        if ($db)
-            $this->conn = new mysqli(SERVER, USERNAME, PASSWORD, $db);
-        else 
-            $this->conn = new mysqli(SERVER, USERNAME, PASSWORD);
+        $this->conn = new mysqli($GLOBALS["CONFIG"]["SQL_SERVER"], $GLOBALS["CONFIG"]["SQL_USERNAME"], $GLOBALS["CONFIG"]["SQL_PASSWORD"], ($db ? $db : null), $GLOBALS["CONFIG"]["SQL_PORT"]);
         if ($this->conn->connect_error) {
             $this->logger->error("SQL connection failed.", ["db" => $db, "error" => $this->conn->connect_error]);
             exit("SQL connection failed.");
