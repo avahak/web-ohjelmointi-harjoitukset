@@ -305,7 +305,7 @@ function recall($name, $sanitize) {
 
 // Returns true if field contained some information.
 function user_modified($name) {
-    $value = $_POST[$name] ?? "";
+    $value = $_POST[$name] ?? $_FILES[$name]["name"] ?? "";
     return ($value ? "user-modified" : "");
 }
 
