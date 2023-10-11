@@ -12,6 +12,11 @@
 // VALIDATION_TRIGGERS is used by javascript to validate other fields in addition
 // to the one changed (used with force_equality).
 
+// TODO: Make file upload with multiple files - each file appears as a "box" under input
+// that can be dismissed - show no difference between uploaded files and only selected files.
+// Giving feedback for multiple files could get messy (but only happens when servers-side
+// custom validation fails so should be rare).
+
 // Reads the validation json file.
 function init_validation($json_file, $temporary_upload_directory=null) {
     if(!session_id())

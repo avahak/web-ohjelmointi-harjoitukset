@@ -137,7 +137,7 @@ function template_file_upload($name, $label) {
     if ($uploaded_file)
         $data_uploaded_file = "data-uploaded-file=\"" . htmlspecialchars($uploaded_file) . "\"";
     $vc = validation_class($name);
-    $um = (($_FILES[$name]["name"] ?? "") ? "user-modified" : "");
+    $um = user_modified($name);
 
     // echo "<br>recall(name): " . recall($name, false);
     // echo "<br>get_value(name): " . get_value($name);
