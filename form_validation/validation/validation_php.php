@@ -13,7 +13,7 @@
 // to the one changed (used with force_equality).
 
 // Reads the validation json file.
-function init_validation($json_file, $temporary_upload_directory="./") {
+function init_validation($json_file, $temporary_upload_directory=null) {
     if(!session_id())
         session_start();
     if ($_SERVER["REQUEST_METHOD"] != "POST")   // form is fresh
@@ -23,6 +23,8 @@ function init_validation($json_file, $temporary_upload_directory="./") {
     // List of feedback for invalid fields:
     $GLOBALS["validation_invalid_feedback"] = [];
 
+    if (empty($temporary_upload_directory) || !file_exists($temporary_upload_directory))
+        $temporary_upload_directory = null;
     $GLOBALS["temporary_upload_directory"] = $temporary_upload_directory;
 
     $GLOBALS["VALIDATION_JSON_STRING"] = file_get_contents($json_file);
@@ -149,7 +151,7 @@ function json_validate() {
             if (isset($_FILES[$name]) && ($_FILES[$name]['error'] == UPLOAD_ERR_OK)) {
                 // User is uploading another file - delete temporary file if we have one:
                 delete_file_if_exists($_SESSION["form_validation_temporary_files"][$name]["temp_file"] ?? null);
-                $_SESSION["form_validation_temporary_files"][$name] = null;
+                unset($_SESSION["form_validation_temporary_files"][$name]);
 
                 $tmp_name = $_FILES[$name]['tmp_name'];
                 $file_name = $_FILES[$name]['name'];
@@ -224,14 +226,15 @@ function json_validate() {
 function store_file($name) {
     if (!isset($_FILES[$name]) || ($_FILES[$name]['error'] != UPLOAD_ERR_OK))
         return;
+    if (empty($GLOBALS["temporary_upload_directory"]))
+        return;     // temporary directory not assigned
 
     $tmp_name = $_FILES[$name]['tmp_name'];
     $file_name = $_FILES[$name]['name'];
 
     $destination_path = $GLOBALS["temporary_upload_directory"] . $name . "_" . bin2hex(random_bytes(6));
-    if (move_uploaded_file($tmp_name, $destination_path)) {
+    if (move_uploaded_file($tmp_name, $destination_path))
         $_SESSION["form_validation_temporary_files"][$name] = ["original" => $file_name, "temp_file" => $destination_path];
-    }
 }
 
 // Deletes a file:
@@ -285,7 +288,10 @@ function custom_feedback($name) {
 function recall($name, $sanitize) {
     $prevent_recall = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"][$name]["prevent_recall"] ?? false;
     // Also prevent recall for file inputs when "store_file" is set false:
-    $prevent_recall = $prevent_recall || !($GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"][$name]["store_file"] ?? true);
+    $store_file = $GLOBALS["VALIDATION_JSON_DECODE"]["VALIDATION_RULES"][$name]["store_file"] ?? null;
+    $prevent_recall = $prevent_recall || ($store_file === false);
+    // Also prevent recall for file inputs when "store_file" is set true and there no temporary directory is assigned:
+    $prevent_recall = $prevent_recall || (($store_file === true) && (empty($GLOBALS["temporary_upload_directory"])));
     if ($prevent_recall)
         return "";
     $value = get_value($name);

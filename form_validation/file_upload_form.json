@@ -37,7 +37,7 @@
             "required": false,
             "max_size_mb": 2.0,
             "accept_extensions": ["application/pdf", ".txt"],
-            "store_file": true
+            "store_file": false
         },
         "agreeCheckbox": {
             "required": true

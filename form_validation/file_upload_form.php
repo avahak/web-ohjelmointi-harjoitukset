@@ -37,7 +37,7 @@ function my_validation_pass() {
 }
 
 // Initialize the php script:
-init_validation("./file_upload_form.json", "../temporary_files/");
+init_validation("./file_upload_form.json", $_SERVER['DOCUMENT_ROOT'] . "/my_temporary_files/");
 // Validate the form (this does nothing if there is no data in POST):
 validate("my_custom_validation", "my_validation_pass");
 ?>

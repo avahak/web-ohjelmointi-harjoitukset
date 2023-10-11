@@ -317,8 +317,9 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!div)
             return;
         if (input.classList.contains("user-modified")) {
-            console.log("DEBUG: ", input, div.innerHTML.length);
-            if ((VALIDATION_JSON.VALIDATION_RULES[name]?.prevent_recall) || (VALIDATION_JSON.VALIDATION_RULES[name]?.store_file === false))
+            // console.log("DEBUG: ", input, input.type, div.innerHTML.trim().length);
+            if ((VALIDATION_JSON.VALIDATION_RULES[name]?.prevent_recall) 
+                    || (input.type == "file" && !input.hasAttribute("data-uploaded-file")))
                 if (div.innerHTML.trim().length == 0) {
                     // Input was modified and prevented from recall and feedback is empty.
                     // Therefore we should tell the user to refill it.
