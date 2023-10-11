@@ -327,6 +327,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         ?? VALIDATION_JSON.VALIDATION_DEFAULT_MESSAGES.prevent_recall;
                     updateFeedbackDiv(form, input, msg);
                 }
+            input.classList.remove("user-modified");
         }
         if (input.classList.contains("is-invalid")) {
             // Update validity for invalid inputs directly after server-side validation:
@@ -378,7 +379,7 @@ document.addEventListener("DOMContentLoaded", function() {
         reset_button.addEventListener("click", () => {
             // Reset the value of the file input
             input.value = "";
-            input.classList.remove("user_modified");
+            input.classList.remove("user-modified");
             if (input.hasAttribute("data-uploaded-file")) {
                 // Restore file upload to temporary stored file:
                 console.log("RESET WITH data-uploaded-file");

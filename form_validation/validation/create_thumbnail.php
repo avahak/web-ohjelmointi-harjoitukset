@@ -1,9 +1,12 @@
 <?php
 
 function create_thumbnail($original_path, $thumbnail_path, $max_size=128) {
-    $original = @imagecreatefromjpeg($original_path);
+    $s_file = file_get_contents($original_path);
+    $original = imagecreatefromstring($s_file);
     if (!$original)
         return false;
+    // Creating an image from a string like this feels wrong and inefficient but 
+    // this seems like the easiest general way to do this with GD library.
 
     // Get the original image dimensions
     $o_width = imagesx($original);
@@ -28,13 +31,17 @@ function create_thumbnail($original_path, $thumbnail_path, $max_size=128) {
     $result = imagejpeg($thumbnail, $thumbnail_path);
 
     // Clean up resources
-    imagedestroy($originalImage);
-    imagedestroy($thumbnailImage);
+    imagedestroy($original);
+    imagedestroy($thumbnail);
 
     return $result;
 }
 
-// create_thumbnail("C:/Users/mavak/Desktop/sun/GQCL5CH7BRFM3IOJP4PVBSGCRI.avif", "C:/Users/mavak/Desktop/sun/thumbnail.jpg")
+// $result = create_thumbnail("C:/Users/mavak/Desktop/sun/6938796248_27574ee44c_b.jpg", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+// $result = create_thumbnail("C:/Users/mavak/Desktop/sun/GQCL5CH7BRFM3IOJP4PVBSGCRI.avif", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+// $result = create_thumbnail("C:/Users/mavak/Desktop/sun/Sun_poster.svg.png", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+$result = create_thumbnail("C:/Users/mavak/Desktop/sun/screen_shot_2015-11-05_at_122320_pm.webp", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+echo ($result ? "Thumbnail created." : "Thumbnail creation failed.") . "<br>";
 // phpinfo();
 if (function_exists('gd_info')) {
     echo 'GD is enabled';
