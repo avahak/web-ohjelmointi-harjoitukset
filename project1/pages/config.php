@@ -9,8 +9,12 @@ $config = new stdClass();
 
 // AZURE settings:
 if ($is_azure) {
-    $config = json_decode(getenv("APP_SETTINGS"), true);
-    if (!$config)
+    $config = [];
+    foreach ($_SERVER as $key => $value) {
+        if (strpos($key, "APPSETTING_") === 0) 
+            $config[substr($key, 11)] = $value;
+    }
+    if (empty($config))
         exit("Error reading AZURE environment variables.");
 }
 
