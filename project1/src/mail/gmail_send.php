@@ -10,7 +10,7 @@
 // 4) Create new (OAuth) Client ID with gmail account from 1) as test user for a web project
 //    and a redirect URI "http://127.0.0.1/(path)/get_oauth_token.php".
 //    This gives you client ID and client secret keys.
-// 5) Run the php script in 4) and enter google, client id, and client secret.
+// 5) Run php script in 4) (from PHPMailer) and enter google, client id, and client secret.
 //    This gives you refresh token.
 // 6) Now that you have Client ID, Client secret, and refresh token, you can send 
 //    mail from gmail 1) with this script.
@@ -34,7 +34,6 @@ function get_oauth() {
         'clientId'     => $GLOBALS["CONFIG"]["GOOGLE_CLIENT_ID"],
         'clientSecret' => $GLOBALS["CONFIG"]["GOOGLE_CLIENT_SECRET"]
     ]);
-
     $oauth = new OAuth([
         'provider' => $provider,
         'userName' => $GLOBALS["CONFIG"]["GOOGLE_EMAIL_SENDER"],
@@ -42,7 +41,6 @@ function get_oauth() {
         'clientId' => $GLOBALS["CONFIG"]["GOOGLE_CLIENT_ID"],
         'refreshToken' => $GLOBALS["CONFIG"]["GOOGLE_REFRESH_TOKEN"],
     ]);
-
     return $oauth;
 }
 
