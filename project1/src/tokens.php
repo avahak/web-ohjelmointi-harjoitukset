@@ -8,8 +8,8 @@
 // Token is validated if validator provided by user hashes into hashed_validator.
 // Hashed_validator is found on the row that has selector matching the one provided by user.
 
-require_once "user_operations.php";
-require_once "init.php";
+require_once __DIR__ . "/user_operations.php";
+require_once __DIR__ . "/init.php";
 
 init();
 

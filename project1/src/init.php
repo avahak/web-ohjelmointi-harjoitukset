@@ -2,11 +2,11 @@
 
 define("IS_PRODUCTION_CODE", false);
 
-require_once "config.php";
+require_once __DIR__ . "/config.php";
 
-require_once "../../sql_connect.php";
-require_once "../../logs/logger.php";
-require_once "user_operations.php";
+require_once __DIR__ . "/../../sql_connect.php";
+require_once __DIR__ . "/../../logs/logger.php";
+require_once __DIR__ . "/user_operations.php";
 
 // TODO not tested
 function set_error_reporting() {

@@ -1,7 +1,7 @@
 <?php 
 
-require_once "shared_elements.php";
-require_once "init.php";
+require_once __DIR__ . "/shared_elements.php";
+require_once __DIR__ . "/init.php";
 
 init();
 

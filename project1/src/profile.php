@@ -1,7 +1,7 @@
 <?php 
 
-require_once "user_operations.php";
-require_once "shared_elements.php";
+require_once __DIR__ . "/user_operations.php";
+require_once __DIR__ . "/shared_elements.php";
 
 $user_id = init_secure_page();
 $user_data = user_data_from_id($user_id);

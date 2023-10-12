@@ -3,9 +3,9 @@
 // a simple page that verifies token given as url parameter
 // used for EMAIL_VERIFICATION
 
-require_once "init.php";
-require_once "tokens.php";
-require_once "template_pages.php";
+require_once __DIR__ . "/init.php";
+require_once __DIR__ . "/tokens.php";
+require_once __DIR__ . "/template_pages.php";
 
 init();
 

@@ -3,16 +3,16 @@
 // Recreates the database so that we do not have to use phpmyadmin tool.
 // WARNING! All existing info in the database is lost.
 
-require_once "config.php";
+require_once __DIR__ . "/config.php";
 
-require_once "../../sql_connect.php";
-require_once "../../logs/logger.php";
+require_once __DIR__ . "/../../sql_connect.php";
+require_once __DIR__ . "/../../logs/logger.php";
 recreate_database();
 // Reason to not include these earlier is that they might assume that the database already exists.
-require_once "tokens.php";
-require_once "user_operations.php";
-require_once "template_pages.php";
-require_once "mail/mailtrap_send.php";
+require_once __DIR__ . "/tokens.php";
+require_once __DIR__ . "/user_operations.php";
+require_once __DIR__ . "/template_pages.php";
+require_once __DIR__ . "/mail/mailtrap_send.php";
 
 $logger = new Logger();
 

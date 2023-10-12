@@ -15,14 +15,14 @@
 // 6) Now that you have Client ID, Client secret, and refresh token, you can send 
 //    mail from gmail 1) with this script.
 
-require_once '../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\OAuth;
 use League\OAuth2\Client\Provider\Google;
 
-require_once '../config.php';
-require_once '../../../logs/logger.php';
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../../../logs/logger.php';
 
 // Use this if there are problems, see comments in gmail_xoauth.phps from PHPMailer
 // date_default_timezone_set('Etc/UTC');

@@ -3,11 +3,11 @@
 // Using https://github.com/PHPMailer/PHPMailer and https://mailtrap.io/ 
 // for sending test emails
 
-require_once '../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer; 
 
-require_once '../../../config/mailtrap.php';
-require_once '../../../logs/logger.php';
+require_once __DIR__ . '/../../../config/mailtrap.php';
+require_once __DIR__ . '/../../../logs/logger.php';
 
 $logger = new Logger();
 

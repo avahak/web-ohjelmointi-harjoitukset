@@ -4,13 +4,13 @@
 // reset request has been submitted. 
 // Use change_password.php for changing user password while logged in.
 
-require_once "../../form_validation/validation/validation_php.php";
-require_once "../../form_validation/validation/template_inputs.php";
+require_once __DIR__ . "/../../form_validation/validation/validation_php.php";
+require_once __DIR__ . "/../../form_validation/validation/template_inputs.php";
 
-require_once "shared_elements.php";
-require_once "init.php";
-require_once "user_operations.php";
-require_once "template_pages.php";
+require_once __DIR__ . "/shared_elements.php";
+require_once __DIR__ . "/init.php";
+require_once __DIR__ . "/user_operations.php";
+require_once __DIR__ . "/template_pages.php";
 
 init();
 

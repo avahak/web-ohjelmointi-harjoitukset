@@ -4,9 +4,9 @@
 define("SEND_ACTUAL_EMAIL", false);
 
 if (SEND_ACTUAL_EMAIL) 
-    require_once "gmail_send.php";
+    require_once __DIR__ . "/gmail_send.php";
 else 
-    require_once "mailtrap_send.php";
+    require_once __DIR__ . "/mailtrap_send.php";
 
 function send_mail() {
     $args = func_get_args();

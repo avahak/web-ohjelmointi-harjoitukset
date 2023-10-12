@@ -1,7 +1,7 @@
 <?php
 
-require_once "./validation/validation_php.php";
-require_once "./validation/template_inputs.php";
+require_once __DIR__ . "/validation/validation_php.php";
+require_once __DIR__ . "/validation/template_inputs.php";
 
 // Custom validation for cases that are not covered by the json file:
 function my_custom_validation() {

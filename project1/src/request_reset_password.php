@@ -2,14 +2,14 @@
 
 // On this page users can enter their password and request a reset password email.
 
-require_once "../../form_validation/validation/validation_php.php";
-require_once "../../form_validation/validation/template_inputs.php";
+require_once __DIR__ . "/../../form_validation/validation/validation_php.php";
+require_once __DIR__ . "/../../form_validation/validation/template_inputs.php";
 
-require_once "shared_elements.php";
-require_once "user_operations.php";
-require_once "template_pages.php";
-require_once "tokens.php";
-require_once "mail/send_mail.php";
+require_once __DIR__ . "/shared_elements.php";
+require_once __DIR__ . "/user_operations.php";
+require_once __DIR__ . "/template_pages.php";
+require_once __DIR__ . "/tokens.php";
+require_once __DIR__ . "/mail/send_mail.php";
 
 init();
 
