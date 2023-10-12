@@ -132,7 +132,7 @@ function include_debug_div() {
     <div class="d-block m-2" style="position:fixed;bottom:0;">
         <button id="debug_div_clear" class="btn btn-sm btn-primary d-none">Clear</button>
         <button id="debug_div_toggle" class="btn btn-sm btn-secondary">General</button>
-        <button class="btn btn-sm btn-secondary">Debug (add custom msgs/vars here)</button>
+        <button class="btn btn-sm btn-secondary">Debug (add custom msgs/vars here!)</button>
         <button class="btn btn-sm btn-secondary">Close</button>
         <div id="debug_div" style="overflow:auto; max-height:500px; max-width:400px; border:1px solid #ccc; padding:10px; background-color:#111;">
             <p><?php echo "SCRIPT_NAME: " . basename($_SERVER["SCRIPT_NAME"]); ?><br>
