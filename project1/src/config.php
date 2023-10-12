@@ -11,6 +11,8 @@ $config = new stdClass();
 if ($is_localhost) {
     $config_file = "d:/projects/project1/localhost_settings.json";
     if (!file_exists($config_file))
+        $config_file = "c:/projects/project1/localhost_settings.json";
+    if (!file_exists($config_file))
         exit("Error! Missing localhost configuration file.");
     $config = json_decode(file_get_contents($config_file), true);
     if (!$config)
