@@ -20,8 +20,7 @@ function verify_reset_password_url_key() {
     $key = $_GET["key"];
     $selector = substr($key, 0, 16);
     $validator = substr($key, 16);
-//TODO CHANGE TO true once enough testing is done!
-    $user_id = verify_token($selector, $validator, "RESET_PASSWORD", false);
+    $user_id = verify_token($selector, $validator, "RESET_PASSWORD", true);
     $GLOBALS["g_logger"]->debug("Password reset in progress.", ["selector" => $selector, "validator" => $validator, "key" => $key, "user_id" => $user_id]);
     return $user_id;
 }
