@@ -50,10 +50,11 @@ function template_body($content) {
 
 // Template for the email that is sent to the user with a link to verify their email.
 function email_template_verification_email($key) {
+    $site = $GLOBALS["CONFIG"]["SITE"];
     $content = <<<HTML
         <h1>Email Verification</h1>
         <p>Thank you for signing up on our website. To verify your email address, please click the link below:</p>
-        <a href="http://127.0.0.1/kurssi/project1/src/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
+        <a href="{$site}/kurssi/project1/src/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
         <p>If you didn't sign up for our website, you can ignore this email.</p>
     HTML;
     return template_header("Email verification") . template_body($content);
@@ -61,10 +62,11 @@ function email_template_verification_email($key) {
 
 // Template for the email that is RE-sent to the user with a link to verify their email.
 function email_template_verification_email_resend($key) {
+    $site = $GLOBALS["CONFIG"]["SITE"];
     $content = <<<HTML
         <h1>Email Verification</h1>
         <p>You have requested a new email verification link. To verify your email address, please click the link below:</p>
-        <a href="http://127.0.0.1/kurssi/project1/src/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
+        <a href="{$site}/kurssi/project1/src/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
         <p>If you didn't sign up for our website or request a new verification email, you can ignore this message.</p>
     HTML;
     return template_header("Email verification") . template_body($content);
@@ -150,10 +152,11 @@ function template_reset_password_email_sent($email) {
 
 // Template email providing reset password link.
 function email_template_reset_password($key) {
+    $site = $GLOBALS["CONFIG"]["SITE"];
     $content = <<<HTML
         <h1>Reset password link</h1>
         <p>Click below to reset your password.</p>
-        <a href="http://127.0.0.1/kurssi/project1/src/reset_password.php?key={$key}" class="btn btn-primary mb-3">Reset password</a>
+        <a href="{$site}/kurssi/project1/src/reset_password.php?key={$key}" class="btn btn-primary mb-3">Reset password</a>
         <p>If you didn't request password reset, you can ignore this email.</p>
     HTML;
     return template_header("Reset password") . template_body($content);

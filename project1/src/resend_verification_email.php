@@ -10,7 +10,7 @@ require_once "shared_elements.php";
 require_once "user_operations.php";
 require_once "template_pages.php";
 require_once "tokens.php";
-require_once "send_mail.php";
+require_once "mail/send_mail.php";
 
 init();
 

@@ -12,7 +12,7 @@ recreate_database();
 require_once "tokens.php";
 require_once "user_operations.php";
 require_once "template_pages.php";
-// require_once "send_mail.php";
+require_once "mail/mailtrap_send.php";
 
 $logger = new Logger();
 
@@ -75,6 +75,6 @@ $email = user_data_from_id($user_id)['email'];
 
 echo "email: $email";
 
-// send_mail("Email verification link", email_template_verification_email($key), "Webteam", $email, $firstname . " " . $lastname, true);
+// mailtrap_send("Email verification link", email_template_verification_email($key), "Webteam", $email, $firstname . " " . $lastname, true);
 
 ?>

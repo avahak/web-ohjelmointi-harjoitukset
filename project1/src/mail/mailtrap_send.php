@@ -1,18 +1,17 @@
 <?php
 
-// Using https://github.com/PHPMailer/PHPMailer
-// Using https://mailtrap.io/ for testing 
+// Using https://github.com/PHPMailer/PHPMailer and https://mailtrap.io/ 
+// for sending test emails
 
-require '../vendor/autoload.php';
+require_once '../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer; 
-use PHPMailer\PHPMailer\Exception;
 
-require_once '../../config/mailtrap.php';
-require_once '../../logs/logger.php';
+require_once '../../../config/mailtrap.php';
+require_once '../../../logs/logger.php';
 
 $logger = new Logger();
 
-function send_mail($subject, $body, $my_name, $recipient_email, $recipient_name, $isHTML=false) {
+function mailtrap_send($subject, $body, $my_name, $recipient_email, $recipient_name, $isHTML=false) {
     global $logger;
     $mail = new PHPMailer();
 
@@ -41,6 +40,6 @@ function send_mail($subject, $body, $my_name, $recipient_email, $recipient_name,
     }
 }
 
-// send_mail("Test subject", "Test body", "Webteam", "test@testaus.com", "testii");
+// mailtrap_send("Test subject", "Test body", "Webteam", "test@testaus.com", "testii");
 
 ?>
