@@ -1,0 +1,39 @@
+# clear git cache: git rm -r --cached . 
+# Setting up as whitelist:
+/**
+
+# Include:
+!currency-conversion
+!currency-conversion/**
+
+!harj_11_9_23/
+!harj_11_9_23/**
+
+!harj_12_9_23/
+!harj_12_9_23/**
+
+!harj_13_9_23/
+!harj_13_9_23/**
+
+!harj_15_9_23/
+!harj_15_9_23/**
+
+!harj_18_9_23/
+!harj_18_9_23/**
+
+!form_validation/
+!form_validation/**
+
+!logs/
+!logs/**
+
+!project1/
+!project1/**
+
+!sql_connect.php
+!index.php
+!.gitignore
+
+/**/*.txt
+/vendor/
+**/vendor/
