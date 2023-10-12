@@ -132,7 +132,7 @@ function include_debug_div() {
     <div class="d-block m-2" style="position:fixed;bottom:0;">
         <button id="debug_div_clear" class="btn btn-sm btn-primary d-none">Clear</button>
         <button id="debug_div_toggle" class="btn btn-sm btn-secondary">General</button>
-        <button class="btn btn-sm btn-secondary">Debug (add custom msgs/vars in this tab)</button>
+        <button class="btn btn-sm btn-secondary">Debug (add custom msgs/vars here)</button>
         <button class="btn btn-sm btn-secondary">Close</button>
         <div id="debug_div" style="overflow:auto; max-height:500px; max-width:400px; border:1px solid #ccc; padding:10px; background-color:#111;">
             <p><?php echo "SCRIPT_NAME: " . basename($_SERVER["SCRIPT_NAME"]); ?><br>
@@ -141,7 +141,7 @@ function include_debug_div() {
             <p><?php echo "_POST: " . var_export($_POST, true); ?></p>
             <p><?php echo "_SESSION: " . var_export($_SESSION, true); ?></p>
             <p><?php echo "_COOKIE: " . var_export($_COOKIE, true); ?></p>
-            <p><?php echo "GLOBALS[\"debug\"]: " . var_export($GLOBALS["debug"], true); ?></p>
+            <p><?php echo "GLOBALS[\"debug\"]: " . var_export($GLOBALS["debug"] ?? null, true); ?></p>
         </div>
     </div>
 
