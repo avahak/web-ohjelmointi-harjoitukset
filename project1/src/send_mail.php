@@ -3,20 +3,18 @@
 // Using https://github.com/PHPMailer/PHPMailer
 // Using https://mailtrap.io/ for testing 
 
+require '../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer; 
+use PHPMailer\PHPMailer\Exception;
+
 require_once '../../config/mailtrap.php';
 require_once '../../logs/logger.php';
-require_once '../../include/PHPMailer/src/Exception.php';
-require_once '../../include/PHPMailer/src/PHPMailer.php';
-require_once '../../include/PHPMailer/src/SMTP.php';
 
 $logger = new Logger();
 
-// use PHPMailer\PHPMailer\PHPMailer; 
-// use PHPMailer\PHPMailer\Exception;
-
 function send_mail($subject, $body, $my_name, $recipient_email, $recipient_name, $isHTML=false) {
     global $logger;
-    $mail = new PHPMailer\PHPMailer\PHPMailer();
+    $mail = new PHPMailer();
 
     $mail->isSMTP();
     $mail->Host = 'sandbox.smtp.mailtrap.io';

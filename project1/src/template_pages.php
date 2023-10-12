@@ -53,7 +53,7 @@ function email_template_verification_email($key) {
     $content = <<<HTML
         <h1>Email Verification</h1>
         <p>Thank you for signing up on our website. To verify your email address, please click the link below:</p>
-        <a href="http://127.0.0.1/kurssi/project1/pages/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
+        <a href="http://127.0.0.1/kurssi/project1/src/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
         <p>If you didn't sign up for our website, you can ignore this email.</p>
     HTML;
     return template_header("Email verification") . template_body($content);
@@ -64,7 +64,7 @@ function email_template_verification_email_resend($key) {
     $content = <<<HTML
         <h1>Email Verification</h1>
         <p>You have requested a new email verification link. To verify your email address, please click the link below:</p>
-        <a href="http://127.0.0.1/kurssi/project1/pages/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
+        <a href="http://127.0.0.1/kurssi/project1/src/email_verification.php?key={$key}" class="btn btn-primary mb-3">Verify Email</a>
         <p>If you didn't sign up for our website or request a new verification email, you can ignore this message.</p>
     HTML;
     return template_header("Email verification") . template_body($content);
@@ -153,7 +153,7 @@ function email_template_reset_password($key) {
     $content = <<<HTML
         <h1>Reset password link</h1>
         <p>Click below to reset your password.</p>
-        <a href="http://127.0.0.1/kurssi/project1/pages/reset_password.php?key={$key}" class="btn btn-primary mb-3">Reset password</a>
+        <a href="http://127.0.0.1/kurssi/project1/src/reset_password.php?key={$key}" class="btn btn-primary mb-3">Reset password</a>
         <p>If you didn't request password reset, you can ignore this email.</p>
     HTML;
     return template_header("Reset password") . template_body($content);

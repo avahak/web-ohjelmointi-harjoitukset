@@ -1,5 +1,5 @@
 <?php
 
-header("location:./pages/front.php");
+header("location:./src/front.php");
 
 ?>

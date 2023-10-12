@@ -20,7 +20,7 @@ if ($is_azure) {
 
 // localhost settings:
 if ($is_localhost) {
-    $config_file = "d:/resources/project1/localhost_settings.json";
+    $config_file = "d:/projects/project1/localhost_settings.json";
     if (!file_exists($config_file))
         exit("Error! Missing localhost configuration file.");
     $config = json_decode(file_get_contents($config_file), true);
