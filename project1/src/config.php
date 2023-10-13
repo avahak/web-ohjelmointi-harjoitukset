@@ -22,10 +22,12 @@ if ($is_localhost) {
 // AZURE settings:
 if ($is_azure) {
     $config = [];
-    foreach ($_SERVER as $key => $value) {
+    foreach ($_ENV as $key => $value) {
         if (strpos($key, "APPSETTING_") === 0) 
             $config[substr($key, 11)] = $value;
     }
+    echo "CONFIG: " . var_export($config, true);
+    exit();
     if (empty($config))
         exit("Error reading AZURE environment variables.");
 }
