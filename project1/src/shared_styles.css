@@ -32,3 +32,12 @@ nav {
     border-radius: 5px;
     border-color: #333; /* Add a border to input fields for better visibility */
 }
+
+#debug-div .nav-link {
+    border-bottom: 1px solid #999 !important;
+}
+
+#debug-div .nav-link.active {
+    background-color: #777 !important;
+    color: #fff !important;
+}
