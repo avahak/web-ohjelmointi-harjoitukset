@@ -26,8 +26,6 @@ if ($is_azure) {
         if (strpos($key, "APPSETTING_") === 0) 
             $config[substr($key, 11)] = $value;
     }
-    echo "CONFIG: " . var_export($config, true);
-    exit();
     if (empty($config))
         exit("Error reading AZURE environment variables.");
 }
