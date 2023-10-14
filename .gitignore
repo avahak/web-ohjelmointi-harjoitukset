@@ -2,7 +2,6 @@
 # Setting up as whitelist:
 /**
 
-# Include:
 !currency-conversion
 !currency-conversion/**
 
@@ -35,5 +34,6 @@
 !.gitignore
 
 /**/*.txt
+/**/*.log
 /vendor/
 **/vendor/

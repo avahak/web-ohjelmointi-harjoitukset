@@ -41,3 +41,19 @@ nav {
     background-color: #777 !important;
     color: #fff !important;
 }
+
+/* #debug-div-nav {
+    min-width: 300px;
+} */
+
+#debug-div {
+    /* overflow: hidden;  */
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    background-color: #111;
+}
+
+#debug-content {
+    height: 60vh; 
+    width: 50vw;
+}
