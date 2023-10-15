@@ -31,7 +31,6 @@ function recreate_database() {
     // Connect to the database, then load and execute SQL schema statements:
     $conn = new SqlConnection("web_admin_db");
     $db_schema = file_get_contents(__DIR__ . '/./web_admin_db.sql');
-    echo nl2br(htmlspecialchars($db_schema));
     $conn->multi_query($db_schema);
     $conn->get_connection()->close();
 }

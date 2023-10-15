@@ -18,21 +18,20 @@ function set_error_reporting() {
     } else {
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
+        ini_set('log_errors', 1);
+        ini_set('error_log', './error_log.txt');
     }
 }
 
-// Initialized $g_conn and $g_logger if not yet done. Starts a session if not started.
+// Initialized g_conn and g_logger if not yet done. Starts a session if not started.
 // TODO instead of global variables, could use session variables?
 function init() {
-    global $g_conn;
-    global $g_logger;
-
     set_error_reporting();
 
     if (!isset($g_conn))
-        $g_conn = new SqlConnection("web_admin_db");
+        $GLOBALS["g_conn"] = new SqlConnection("web_admin_db");
     if (!isset($g_logger))
-        $g_logger = new Logger();
+        $GLOBALS["g_logger"] = new Logger();
 
     if(!session_id())
         session_start();
