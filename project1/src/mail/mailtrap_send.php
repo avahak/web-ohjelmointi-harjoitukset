@@ -23,7 +23,7 @@ function mailtrap_send($subject, $body, $my_name, $recipient_email, $recipient_n
     $mail->Port = 2525;
     $mail->CharSet = "UTF-8";   // enables ä, ö
 
-    $mail->setFrom($GLOBALS["CONFIG"]["MAILTRAP_IO_EMAIL"], $my_name);
+    $mail->setFrom($GLOBALS["CONFIG"]["MAILTRAP_IO_EMAIL_SENDER"], $my_name);
     $mail->addAddress($recipient_email, $recipient_name);
     $mail->Subject = $subject;
     if ($isHTML)

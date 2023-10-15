@@ -1,16 +1,13 @@
 <?php
 
-define("IS_PRODUCTION_CODE", false);
-
 require_once __DIR__ . "/config.php";
-
 require_once __DIR__ . "/../../sql_connect.php";
 require_once __DIR__ . "/../../logs/logger.php";
 require_once __DIR__ . "/user_operations.php";
 
 // TODO not tested
 function set_error_reporting() {
-    if (IS_PRODUCTION_CODE) {
+    if ($GLOBALS["CONFIG"]["IS_PRODUCTION_SETTING"]) {
         error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR);
         ini_set('display_errors', 0);
         ini_set('log_errors', 1);
@@ -28,9 +25,9 @@ function set_error_reporting() {
 function init() {
     set_error_reporting();
 
-    if (!isset($g_conn))
+    if (!isset($GLOBALS["g_conn"]))
         $GLOBALS["g_conn"] = new SqlConnection("web_admin_db");
-    if (!isset($g_logger))
+    if (!isset($GLOBALS["g_logger"]))
         $GLOBALS["g_logger"] = new Logger();
 
     if(!session_id())

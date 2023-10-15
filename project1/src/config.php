@@ -21,6 +21,7 @@ function setup_globals_config() {
 
     // AZURE settings:
     if ($is_azure) {
+        exit("Temporarily offline");    // TODO REMOVE!
         $config = [];
         foreach ($_ENV as $key => $value) {
             if (strpos($key, "APPSETTING_") === 0) 
