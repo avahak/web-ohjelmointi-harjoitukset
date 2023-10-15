@@ -28,7 +28,7 @@ function shared_script_start($title) {
 // Ending of the shared script:
 function shared_script_end() {
     include_footer();
-    include_debug_div();
+    // include_debug_div();
     echo "</body></html>";
 }
 

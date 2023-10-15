@@ -32,7 +32,6 @@ function include_debug_div() {
                 <p><?php echo "_POST: " . var_export($_POST, true); ?></p>
                 <p><?php echo "_SESSION: " . var_export($_SESSION, true); ?></p>
                 <p><?php echo "_COOKIE: " . var_export($_COOKIE, true); ?></p>
-                <p><?php echo "_ENV: " . var_export($_ENV, true); ?></p>
             </div>
             <div id="php-errors" class="tab-pane fade" role="tabpanel"></div>
             <div id="logger" class="tab-pane fade" role="tabpanel"></div>
