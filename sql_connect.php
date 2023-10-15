@@ -72,12 +72,13 @@ class SqlConnection {
                 call_user_func_array([$stmt, 'bind_param'], $s_params);
             }
             if (!$stmt->execute()) {
-                $this->logger->error("SQL query failed to execute.", ["query" => $query]);
+                $this->logger->error("SQL query failed to execute.", compact("query"));
                 return ["success" => false, "value" => "Statement failed to execute."];
             }
             $result = $stmt->get_result();
+            $affected_rows = $this->conn->affected_rows;
             $stmt->close();
-            $this->logger->debug("SQL query success.", ["query" => $query, "params" => var_export($params, true)]);
+            $this->logger->debug("SQL query success.", ["query" => $query, "affected_rows" => $affected_rows, "params" => var_export($params, true)]);
             return ["success" => true, "value" => $result];  // success
         } catch (mysqli_sql_exception $e) {
             $this->logger->error("SQL query caused mysqli_sql_exception.", ["query" => $query, "exception" => $e->getMessage()]);

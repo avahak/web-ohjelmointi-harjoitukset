@@ -22,10 +22,6 @@
         },
         "pw": {
             "required": true,
-            "min_length": 3,
-            "max_length": 30,
-            "pattern1": "(?=.*[A-Za-z0-9])",
-            "pattern2": "(?=.*[^A-Za-z0-9])",
             "prevent_recall": true
         }
     },
@@ -40,8 +36,6 @@
         },
         "pw": {
             "text": "password",
-            "pattern1": "%1 needs to contain at least one regular character.",
-            "pattern2": "%1 needs to contain at least one special character.",
             "prevent_recall": "Please retype password."
         }
     }

@@ -23,8 +23,8 @@ function validation_pass() {
     $lastname = $_POST["lastname"] ?? "";
     $email = $_POST["email"] ?? "";
     $phone = $_POST["phone"] ?? "";
-    $pw = $_POST["pw"] ?? "";
-    $result = add_user($firstname, $lastname, $email, $phone, $pw);
+    $pw_hash = custom_password_hash($_POST["pw"] ?? "");
+    $result = add_user($firstname, $lastname, $email, $phone, $pw_hash);
     if (!$result["success"]) {
         // Insert failed - this is an unexpected error
         echo template_unexpected_error("Adding new user failed.");
@@ -37,7 +37,7 @@ function validation_pass() {
     $token = create_token($user_id, "EMAIL_VERIFICATION", 24);
     $key = urlencode($token["selector"] . $token["validator"]);
 
-    $GLOBALS["g_logger"]->debug("Adding new user", ["user_id" => $user_id, "key" => $key, "fullname" => $fullname, "email" => $email]);
+    $GLOBALS["g_logger"]->debug("Adding new user", compact("user_id", "key", "fullname", "email"));
 
     send_mail("Email verification link", email_template_verification_email($key), 
             "Webteam", $email, $fullname, true);

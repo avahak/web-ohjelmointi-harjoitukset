@@ -25,10 +25,15 @@ function verify_password($email, $pw) {
     return $user_id;
 }
 
+// Hashing function for passwords. Implemented to use the method every time.
+function custom_password_hash($pw) {
+    return password_hash($GLOBALS["CONFIG"]["PEPPER"] . $pw, PASSWORD_DEFAULT);
+}
+
 // Changes the user password 
 function change_password($user_id, $new_pw) {
-    $new_pw_hash = password_hash($GLOBALS["CONFIG"]["PEPPER"] . $new_pw, PASSWORD_DEFAULT);
-    $GLOBALS["g_logger"]->warning("change_password called", compact("user_id", "new_pw"));
+    $new_pw_hash = custom_password_hash($new_pw);
+    $GLOBALS["g_logger"]->warning("change_password called", compact("user_id", "new_pw_hash"));
     $query = "UPDATE users SET pw_hash=? WHERE id=?";
     $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $new_pw_hash, $user_id);
     return $result["success"];
@@ -64,8 +69,7 @@ function user_data_from_email($email) {
 }
 
 // Adds a new user to the database.
-function add_user($firstname, $lastname, $email, $phone, $pw) {
-    $pw_hash = password_hash($GLOBALS["CONFIG"]["PEPPER"] . $pw, PASSWORD_DEFAULT);
+function add_user($firstname, $lastname, $email, $phone, $pw_hash) {
     $query = "INSERT INTO users (firstname, lastname, email, phone, pw_hash) VALUES (?, ?, ?, ?, ?)";
     $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $firstname, $lastname, $email, $phone, $pw_hash);
     // should return user_id?
@@ -76,6 +80,13 @@ function add_user($firstname, $lastname, $email, $phone, $pw) {
 function change_user_status($user_id, $new_status) {
     $query = "UPDATE users SET status=? WHERE id=?";
     $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $new_status, $user_id);
+    return $result;
+}
+
+// Changes the role of the given user.
+function change_user_role($user_id, $new_role) {
+    $query = "UPDATE users SET role=? WHERE id=?";
+    $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $new_role, $user_id);
     return $result;
 }
 

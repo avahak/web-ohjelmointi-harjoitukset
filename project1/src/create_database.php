@@ -12,10 +12,12 @@ recreate_database();
 require_once __DIR__ . "/tokens.php";
 require_once __DIR__ . "/user_operations.php";
 require_once __DIR__ . "/template_pages.php";
-require_once __DIR__ . "/mail/mailtrap_send.php";
+require_once __DIR__ . "/mail/send_mail.php";
 
 $logger = new Logger();
 
+// Wipes the existing database and creates a new one. 
+// WARNING: All existing user data is deleted!
 function recreate_database() {
     // Create a database-independent connection:
     $conn = new SqlConnection();
@@ -28,16 +30,31 @@ function recreate_database() {
 
     // Connect to the database, then load and execute SQL schema statements:
     $conn = new SqlConnection("web_admin_db");
-    $db_schema = file_get_contents('web_admin_db.sql');
+    $db_schema = file_get_contents(__DIR__ . '/./web_admin_db.sql');
     echo nl2br(htmlspecialchars($db_schema));
     $conn->multi_query($db_schema);
     $conn->get_connection()->close();
 }
 
-// exit();
+// Crates an admin user with a random temporary password and sends that password to 
+// the email address defined in $GLOBALS["CONFIG"]["GOOGLE_EMAIL_SENDER"].
+function create_admin_user() {
+    $pw = random_string(6);
+    
+    add_user("Admin", "", "admin@example.com", null, custom_password_hash($pw));
+    change_user_status(user_id_from_email("admin@example.com"), "ACTIVE");
+    change_user_role(user_id_from_email("admin@example.com"), "ADMIN");
+
+    $body = "Temporary password for Admin is: " . $pw . "\nPlease change this when you log in.\n-TBA";
+    send_mail("Temporary Admin Password", $body, "Webteam", 
+        $GLOBALS["CONFIG"]["GOOGLE_EMAIL_SENDER"], "Admin", false);
+}
+
+create_admin_user();
+
+exit();
 
 // add a few test users:
-add_user("Admin", "", "admin@neilikka.fi", null, "");
 add_user("Otto", "Mäkelä", "otto@otto.fi", "040-123456", "1234");
 change_user_status(user_id_from_email("admin@neilikka.fi"), "ACTIVE");
 

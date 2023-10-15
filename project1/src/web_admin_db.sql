@@ -9,7 +9,8 @@ CREATE TABLE users (
     phone VARCHAR(16),
     -- BCrypt always generates 60 characters long but leave space if PASSWORD_DEFAULT changes 
     pw_hash VARCHAR(255) NOT NULL,
-    status ENUM('ACTIVE', 'INACTIVE', 'UNVERIFIED') NOT NULL DEFAULT 'UNVERIFIED'
+    status ENUM('ACTIVE', 'INACTIVE', 'UNVERIFIED') NOT NULL DEFAULT 'UNVERIFIED',
+    role ENUM('MEMBER', 'STAFF', 'ADMIN') NOT NULL DEFAULT 'MEMBER'
 ) ENGINE=InnoDB;
 
 CREATE TABLE tokens (

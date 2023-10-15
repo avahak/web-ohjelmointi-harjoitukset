@@ -18,7 +18,7 @@ shared_script_start("Profile");
                 $s_firstname = htmlspecialchars($user_data["firstname"]);
                 $s_lastname = htmlspecialchars($user_data["firstname"]);
                 $s_email = htmlspecialchars($user_data["email"]);
-                $s_phone = htmlspecialchars($user_data["phone"]);
+                $s_phone = htmlspecialchars($user_data["phone"] ?? "");
                 $s_pw_hash = htmlspecialchars($user_data["pw_hash"]);
                 $s_status = htmlspecialchars($user_data["status"]);
                 echo "<h1 class=\"display-4\">Hello, $s_firstname!</h1>";
