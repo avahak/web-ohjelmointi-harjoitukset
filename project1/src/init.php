@@ -7,17 +7,15 @@ require_once __DIR__ . "/user_operations.php";
 
 // TODO not tested
 function set_error_reporting() {
-    if ($GLOBALS["CONFIG"]["IS_PRODUCTION_SETTING"]) {
+    if ($GLOBALS["CONFIG"]["IS_PRODUCTION_SETTING"] == "true") {
         error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR);
         ini_set('display_errors', 0);
-        ini_set('log_errors', 1);
-        ini_set('error_log', './error_log.txt');
     } else {
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
-        ini_set('log_errors', 1);
-        ini_set('error_log', './error_log.txt');
     }
+    ini_set('log_errors', 1);
+    ini_set('error_log', './error_log.txt');
 }
 
 // Initialized g_conn and g_logger if not yet done. Starts a session if not started.

@@ -35,8 +35,7 @@ function recreate_database() {
     $conn->get_connection()->close();
 }
 
-// Crates an admin user with a random temporary password and sends that password to 
-// the email address defined in $GLOBALS["CONFIG"]["GOOGLE_EMAIL_SENDER"].
+// Crates an admin user with a random temporary password and sends that password to email.
 function create_admin_user() {
     $pw = random_string(6);
     
@@ -46,10 +45,12 @@ function create_admin_user() {
 
     $body = "Temporary password for Admin is: " . $pw . "\nPlease change this when you log in.\n-TBA";
     send_mail("Temporary Admin Password", $body, "Webteam", 
-        $GLOBALS["CONFIG"]["GOOGLE_EMAIL_SENDER"], "Admin", false);
+        $GLOBALS["CONFIG"][$GLOBALS["CONFIG"]["EMAIL_SENDER"] . "_EMAIL_SENDER"], "Admin", false);
 }
 
+echo "Created database.<br>";
 create_admin_user();
+echo "Created admin.<br>";
 
 exit();
 
