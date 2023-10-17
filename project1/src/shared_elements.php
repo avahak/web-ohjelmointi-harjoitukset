@@ -46,7 +46,7 @@ function include_navbar() {
     $active_page = (basename($_SERVER["SCRIPT_NAME"]) ?? ""); 
     ?>
 
-    <nav class="navbar navbar-expand-sm navbar-dark p-0">
+    <nav class="navbar navbar-expand-md navbar-dark p-0">
         <div class="container d-flex px-3 py-1" style="overflow:hidden;">
 
             <button class="navbar-toggler order-1" data-bs-toggle="collapse" data-bs-target="#nav">
@@ -57,7 +57,7 @@ function include_navbar() {
                 <img src="../images/tba.png" style="width:120px;margin-top:-30px;" alt="TBA">
             </a>
 
-            <ul class="navbar-nav order-3 order-sm-5">
+            <ul class="navbar-nav order-3 order-md-5">
                 <?php
                     echo "<li class=\"nav-item\">";
                     if (isset($_SESSION["user_id"])) {
@@ -109,7 +109,7 @@ function include_navbar() {
 function include_footer() {
     ob_start(); ?>
 
-    <footer class="custom-footer" id="custom-footer">
+    <footer class="custom-footer" id="custom-footer" style="position:relative;">
         <div class="container">
             <div class="row">
                 <div class="col-12 col-sm-6 text-center text-sm-left">
@@ -121,6 +121,22 @@ function include_footer() {
                     <a class="link-primary" href="./privacy.php">Privacy Statement</a>
                 </div>
             </div>
+        </div>
+        <div style="position:absolute;bottom:10px;right:10px;font-size:2rem;">
+            <style>
+                .size-box {
+                    border-radius: 15px;
+                    box-shadow: 0 0 0 2px black;           
+                    color: #fff;
+                    text-shadow: 0px 0px 4px rgba(0, 0, 0, 1.0);
+                    font-family: 'Arial Black', sans-serif;
+                }
+            </style>
+            <div class="size-box p-1 d-block d-sm-none" style="background:#FF5733;">XS</div>
+            <div class="size-box p-1 d-none d-sm-block d-md-none" style="background:#FFA533;">SM</div>
+            <div class="size-box p-1 d-none d-md-block d-lg-none" style="background:#FFC733;">MD</div>
+            <div class="size-box p-1 d-none d-lg-block d-xl-none" style="background:#33B5E5;">LG</div>
+            <div class="size-box p-1 d-none d-xl-block" style="background:#9AC7DC;">XL</div>
         </div>
     </footer>
 

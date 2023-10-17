@@ -7,12 +7,6 @@ require_once __DIR__ . "/config.php";
 
 require_once __DIR__ . "/../../sql_connect.php";
 require_once __DIR__ . "/../../logs/logger.php";
-recreate_database();
-// Reason to not include these earlier is that they might assume that the database already exists.
-require_once __DIR__ . "/tokens.php";
-require_once __DIR__ . "/user_operations.php";
-require_once __DIR__ . "/template_pages.php";
-require_once __DIR__ . "/mail/send_mail.php";
 
 $logger = new Logger();
 
@@ -47,6 +41,14 @@ function create_admin_user() {
     send_mail("Temporary Admin Password", $body, "Webteam", 
         $GLOBALS["CONFIG"][$GLOBALS["CONFIG"]["EMAIL_SENDER"] . "_EMAIL_SENDER"], "Admin", false);
 }
+
+recreate_database();
+
+// Reason to not include these earlier is that they might assume that the database already exists.
+require_once __DIR__ . "/tokens.php";
+require_once __DIR__ . "/user_operations.php";
+require_once __DIR__ . "/template_pages.php";
+require_once __DIR__ . "/mail/send_mail.php";
 
 echo "Created database.<br>";
 create_admin_user();

@@ -102,7 +102,7 @@ function authenticate_user($redirect=false) {
         $key = urldecode($_COOKIE["remember_me"]);
         $selector = substr($key, 0, 16);
         $validator = substr($key, 16);
-        $user_id = verify_token($selector, $validator, "REMEMBER_ME", true);
+        $user_id = verify_token($selector, $validator, "REMEMBER_ME", false);
         if ($user_id) {
             $user_data = user_data_from_id($user_id);
             $_SESSION["user_id"] = $user_id;

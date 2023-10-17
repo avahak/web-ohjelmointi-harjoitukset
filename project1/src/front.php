@@ -7,6 +7,7 @@ init();
 
 if (($_SERVER["REQUEST_METHOD"] == "GET") && (isset($_GET["logout"]))) {
     logout();
+    header("location: front.php");
 }
 
 shared_script_start("Info");

@@ -16,8 +16,8 @@ function include_debug_div() {
 
     ob_start(); ?>
 
-    <div id="debug-div" class="d-block m-3" style="position:fixed;bottom:0px;">
-        <div id="debug-content" class="collapse debug-collapse tab-content" style="overflow-y:scroll;overflow-x:auto;">
+    <div id="debug-div" class="d-block m-3 js-hidden" style="position:fixed;bottom:0px;">
+        <div id="debug-content" class="js-collapse debug-collapse tab-content" data-display="block" style="display:none;overflow-y:scroll;overflow-x:auto;">
             <div id="general" class="tab-pane fade show active" role="tabpanel">
                 <p><?php echo "SCRIPT_NAME: " . basename($_SERVER["SCRIPT_NAME"]); ?><br>
                 <?php echo "REQUEST_METHOD: " . $_SERVER["REQUEST_METHOD"]; ?></p>
@@ -36,10 +36,10 @@ function include_debug_div() {
             </div>
         </div>
         <nav id="debug-div-nav" class="navbar navbar-dark bg-dark p-1">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".debug-collapse" style="outline:none;box-shadow:none;">
+            <button class="navbar-toggler" type="button" onclick="toggleDebugDiv()" style="outline:none;box-shadow:none;">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <ul class="nav nav-pills navbar-dark bg-dark collapse debug-collapse me-auto" role="tablist">
+            <ul class="nav nav-pills navbar-dark bg-dark js-collapse debug-collapse me-auto" role="tablist" data-display="flex" style="display:none">
                 <li class="nav-item">
                     <button type="button" class="nav-link active" id="button-general" data-bs-toggle="pill" data-bs-target="#general" role="tab">General</button>
                 </li>
@@ -55,12 +55,15 @@ function include_debug_div() {
 
     <script>
         function fetch_and_display(url, elementId) {
-            fetch(url)
-                .then(response => response.text())
+            fetch(url, { cache: 'no-store', })
+                .then(response => {
+                    if (!response.ok)
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.text();
+                })
                 .then(content => {
-                    // const formattedContent = content.replace(/\n/g, "<hr>");
-                    const lines = content.trim().split('\n');
-                    const reversedContent = lines.reverse().join('<hr>');
+                    const lines = content.trim().split('\n[');
+                    const reversedContent = '[' + lines.reverse().join('<hr style=\"margin:5px;\">[');
                     const element = document.getElementById(elementId);
                     element.innerHTML = reversedContent;
                     const debugContent = document.getElementById("debug-content");
@@ -70,27 +73,27 @@ function include_debug_div() {
                     console.error("Error fetching the file:", error);
                 });
         }
-        function scrollToBottom(elementId) {
-            const element = document.getElementById(elementId);
-            setTimeout(() => {
-                element.scrollTop = element.scrollHeight;
-            }, 0);
-        }
-        function hideChildren(elementId) {
-            const element = document.getElementById(elementId);
-            for (let i = 0; i < element.children.length; i++)
-                element.children[i].classList.add("d-none");
-        }
         document.getElementById("button-php-errors").addEventListener("click", () => {
             // Specify the URL of the file you want to fetch
             const logFile = "../../logs/php_errors.log";
             fetch_and_display(logFile, "php-errors");
         });
-        // document.getElementById("button-logger").addEventListener("click", () => {
-        //     // Specify the URL of the file you want to fetch
-        //     const logFile = "../../logs/log.txt";
-        //     fetch_and_display(logFile, "logger");
-        // });
+        let debugDiv = document.getElementById("debug-div");
+        document.addEventListener("click", (event) => {
+            // Close debug-div if it is open and clicked outside it:
+            if (isDebugDivVisible() && !debugDiv.contains(event.target))
+                toggleDebugDiv();
+        });
+        function isDebugDivVisible() {
+            return !debugDiv.classList.contains("js-hidden");
+        }
+        function toggleDebugDiv() {
+            let collapseElementList = debugDiv.querySelectorAll('.js-collapse');
+            collapseElementList.forEach((collapseEl) => {
+                collapseEl.style.display = (isDebugDivVisible() ? "none" : collapseEl.getAttribute("data-display"));
+            });
+            debugDiv.classList.toggle("js-hidden");
+        }
     </script>
 
     <?php ob_end_flush();

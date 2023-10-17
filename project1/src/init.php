@@ -15,7 +15,7 @@ function set_error_reporting() {
         ini_set('display_errors', 1);
     }
     ini_set('log_errors', 1);
-    ini_set('error_log', './error_log.txt');
+    ini_set('error_log', '../../logs/php_errors.log');
 }
 
 // Initialized g_conn and g_logger if not yet done. Starts a session if not started.

@@ -148,8 +148,8 @@ function create_log_table($entries) {
             <?php foreach ($entries as $entry): ?>
                 <?php 
                 $time_diff = get_time_diff($entry["time"]);
-                $arr1 = ["DEBUG" => "bg-dark", "INFO" => "bg-dark", "WARNING" => "bg-warning", "ERROR" => "bg-danger"];
-                $arr2 = ["DEBUG" => "table-dark", "INFO" => "table-dark", "WARNING" => "table-warning", "ERROR" => "table-danger"];
+                $arr1 = ["DEBUG" => "bg-dark", "INFO" => "bg-primary", "WARNING" => "bg-warning", "ERROR" => "bg-danger"];
+                $arr2 = ["DEBUG" => "table-dark", "INFO" => "table-primary", "WARNING" => "table-warning", "ERROR" => "table-danger"];
                 $bg1 = $arr1[$entry["level"]];
                 $bg2 = $arr2[$entry["level"]];
                 ?>
