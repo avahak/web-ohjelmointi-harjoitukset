@@ -3,21 +3,21 @@
 require_once __DIR__ . "/../../logs/logger.php";
 require_once __DIR__ . "/user_operations.php";
 
-// Azure: log stream (logging), wwwroot (file view) 
-
 // Adds debug info div:
 function include_debug_div() {
     $user_id = authenticate_user();
-    if (!$user_id)
-        return;
-    $user_data = user_data_from_id($user_id);
-    if (!$user_data || ($user_data["role"] != 'ADMIN'))
-        return;
+    if (!$GLOBALS["CONFIG"]["IS_LOCALHOST"]) {
+        if (!$user_id)
+            return;
+        $user_data = user_data_from_id($user_id);
+        if (!$user_data || ($user_data["role"] != 'ADMIN'))
+            return;
+    }
 
     ob_start(); ?>
 
     <div id="debug-div" class="d-block m-3 js-hidden" style="position:fixed;bottom:0px;">
-        <div id="debug-content" class="js-collapse debug-collapse tab-content" data-display="block" style="display:none;overflow-y:scroll;overflow-x:auto;">
+        <div id="debug-content" class="js-collapse debug-collapse tab-content" data-display="block" style="display:none;overflow-y:auto;overflow-x:auto;">
             <div id="general" class="tab-pane fade show active" role="tabpanel">
                 <p><?php echo "SCRIPT_NAME: " . basename($_SERVER["SCRIPT_NAME"]); ?><br>
                 <?php echo "REQUEST_METHOD: " . $_SERVER["REQUEST_METHOD"]; ?></p>
@@ -34,6 +34,9 @@ function include_debug_div() {
                 create_log_table($entries);
                 ?>
             </div>
+            <div id="phpinfo" class="tab-pane fade" role="tabpanel" style="height:100%;overflow:hidden;">
+                <iframe id="iframe-phpinfo" src="" data-js-src="phpinfo.php" width="100%" height="400px" style="border:0;"></iframe>
+            </div>
         </div>
         <nav id="debug-div-nav" class="navbar navbar-dark bg-dark p-1">
             <button class="navbar-toggler" type="button" onclick="toggleDebugDiv()" style="outline:none;box-shadow:none;">
@@ -49,11 +52,15 @@ function include_debug_div() {
                 <li class="nav-item">
                     <button type="button" class="nav-link" id="button-logger" data-bs-toggle="pill" data-bs-target="#logger" role="tab">Logger</button>
                 </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" id="button-phpinfo" data-bs-toggle="pill" data-bs-target="#phpinfo" role="tab">phpinfo</button>
+                </li>
             </ul>
         </nav>
     </div>
 
     <script>
+        // php-errors:
         function fetch_and_display(url, elementId) {
             fetch(url, { cache: 'no-store', })
                 .then(response => {
@@ -78,12 +85,30 @@ function include_debug_div() {
             const logFile = "../../logs/php_errors.log";
             fetch_and_display(logFile, "php-errors");
         });
+
+        // phpinfo:
+        document.getElementById("button-phpinfo").addEventListener("click", () => {
+            iFrame = document.getElementById("iframe-phpinfo");
+            iFrame.setAttribute("src", iFrame.getAttribute("data-js-src"));
+        });
+        function resizePhpinfo() {
+            const debugContent = document.getElementById("debug-content");
+            const iFrame = document.getElementById("iframe-phpinfo");
+            iFrame.style.height = debugContent.clientHeight + 'px';
+        }
+        new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                resizePhpinfo();
+            }
+        }).observe(document.getElementById("debug-content"));
+
         let debugDiv = document.getElementById("debug-div");
         document.addEventListener("click", (event) => {
             // Close debug-div if it is open and clicked outside it:
             if (isDebugDivVisible() && !debugDiv.contains(event.target))
                 toggleDebugDiv();
         });
+
         function isDebugDivVisible() {
             return !debugDiv.classList.contains("js-hidden");
         }

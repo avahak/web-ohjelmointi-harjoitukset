@@ -155,7 +155,7 @@ function json_validate() {
 
             if (isset($_FILES[$name]) && ($_FILES[$name]['error'] == UPLOAD_ERR_OK)) {
                 // User is uploading another file - delete temporary file if we have one:
-                delete_file_if_exists($_SESSION["form_validation_temporary_files"][$name]["temp_file"] ?? null);
+                delete_file_if_exists($_SESSION["form_validation_temporary_files"][$name]["tmp_file"] ?? null);
                 unset($_SESSION["form_validation_temporary_files"][$name]);
 
                 $tmp_name = $_FILES[$name]['tmp_name'];
@@ -239,7 +239,7 @@ function store_file($name) {
 
     $destination_path = $GLOBALS["temporary_upload_directory"] . $name . "_" . bin2hex(random_bytes(6));
     if (move_uploaded_file($tmp_name, $destination_path))
-        $_SESSION["form_validation_temporary_files"][$name] = ["original" => $file_name, "temp_file" => $destination_path];
+        $_SESSION["form_validation_temporary_files"][$name] = ["original" => $file_name, "tmp_file" => $destination_path];
 }
 
 // Deletes a file:

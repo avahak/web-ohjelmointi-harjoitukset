@@ -37,24 +37,21 @@ function create_thumbnail($original_path, $thumbnail_path, $max_size=128) {
     return $result;
 }
 
-// $result = create_thumbnail("C:/Users/mavak/Desktop/sun/6938796248_27574ee44c_b.jpg", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
-// $result = create_thumbnail("C:/Users/mavak/Desktop/sun/GQCL5CH7BRFM3IOJP4PVBSGCRI.avif", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
-// $result = create_thumbnail("C:/Users/mavak/Desktop/sun/Sun_poster.svg.png", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
-$result = create_thumbnail("C:/Users/mavak/Desktop/sun/screen_shot_2015-11-05_at_122320_pm.webp", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
-echo ($result ? "Thumbnail created." : "Thumbnail creation failed.") . "<br>";
-// phpinfo();
-if (function_exists('gd_info')) {
-    echo 'GD is enabled';
-    echo '<pre>';
-    print_r(gd_info());
-    echo '</pre>';
-} else {
-    echo 'GD is not enabled';
-}
-if (extension_loaded('gd')) {
-    echo 'GD is enabled';
-} else {
-    echo 'GD is not enabled';
+$is_direct_request = str_ends_with(str_replace('\\', '/', __FILE__), $_SERVER['SCRIPT_NAME']);
+if ($is_direct_request) {
+    // $result = create_thumbnail("C:/Users/mavak/Desktop/sun/6938796248_27574ee44c_b.jpg", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+    // $result = create_thumbnail("C:/Users/mavak/Desktop/sun/GQCL5CH7BRFM3IOJP4PVBSGCRI.avif", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+    // $result = create_thumbnail("C:/Users/mavak/Desktop/sun/Sun_poster.svg.png", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+    // $result = create_thumbnail("C:/Users/mavak/Desktop/sun/screen_shot_2015-11-05_at_122320_pm.webp", "C:/Users/mavak/Desktop/sun/thumbnail.jpg");
+    // echo ($result ? "Thumbnail created." : "Thumbnail creation failed.") . "<br>";
+    if (function_exists('gd_info')) {
+        echo 'GD is enabled';
+        echo '<pre>';
+        print_r(gd_info());
+        echo '</pre>';
+    } else {
+        echo 'GD is not enabled';
+    }
 }
 
 ?>

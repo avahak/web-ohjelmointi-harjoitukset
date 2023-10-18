@@ -15,19 +15,27 @@ function my_validation_pass() {
     echo "<h1></br>Form passed validation with JSON rules and custom validation.</h1><h3>";
 
     if (isset($GLOBALS["form_validation_temporary_files"]["image"])) {
-        echo "</br>Here is the uploaded image:";
-        $image_temp_file = $GLOBALS["form_validation_temporary_files"]["image"]["temp_file"];
-        $image_content_base64 = base64_encode(file_get_contents($image_temp_file));
+        echo "</br>Here is the image that was uploaded earlier:";
+        $image_tmp_file = $GLOBALS["form_validation_temporary_files"]["image"]["tmp_file"];
+        $image_content_base64 = base64_encode(file_get_contents($image_tmp_file));
         echo "</br><img src=\"data:image/png;base64,$image_content_base64\" style=\"max-width:200px;max-height:200px;width:auto;height:auto;\">";
-        $image_temp_file = $GLOBALS["form_validation_temporary_files"]["image"]["temp_file"];
-        delete_file_if_exists($image_temp_file);
-    }
+        delete_file_if_exists($image_tmp_file);
+    } else if (isset($_FILES["image"]["tmp_name"])) {
+        echo "</br>Here is the image that was just uploaded:";
+        $image_tmp_file = $_FILES["image"]["tmp_name"];
+        $image_content_base64 = base64_encode(file_get_contents($image_tmp_file));
+        echo "</br><img src=\"data:image/png;base64,$image_content_base64\" style=\"max-width:200px;max-height:200px;width:auto;height:auto;\">";
+    } 
 
     if (isset($GLOBALS["form_validation_temporary_files"]["document"])) {
-        $document_temp_file = $GLOBALS["form_validation_temporary_files"]["document"]["temp_file"];
+        $document_tmp_file = $GLOBALS["form_validation_temporary_files"]["document"]["tmp_file"];
         $document_original = $GLOBALS["form_validation_temporary_files"]["document"]["original"];
-        echo "</br>The uploaded document was: $document_original";
-        delete_file_if_exists($document_temp_file);
+        echo "</br>The document that was uploaded earlier was: $document_original";
+        delete_file_if_exists($document_tmp_file);
+    } else if (isset($_FILES["document"]["tmp_name"])) {
+        $document_tmp_file = $_FILES["document"]["tmp_name"];
+        $document_original = $_FILES["document"]["name"];
+        echo "</br>The document that was just uploaded was: $document_original";
     }
 
     echo "<br><a href=".">Back</a>";

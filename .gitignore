@@ -35,5 +35,6 @@
 
 /**/*.txt
 /**/*.log
+/project1/user_data/**
 /vendor/
 **/vendor/

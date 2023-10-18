@@ -1,6 +1,6 @@
 <?php 
 
-// On this page users can enter their password and request a reset password email.
+// On this page users can enter their email and request a reset password email.
 
 require_once __DIR__ . "/../../form_validation/validation/validation_php.php";
 require_once __DIR__ . "/../../form_validation/validation/template_inputs.php";

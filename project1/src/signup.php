@@ -1,7 +1,11 @@
 <?php 
 
+// Fields: name, email, pw, profile_picture
+// Rejected fields: firstname, lastname, phone_number
+
 require_once __DIR__ . "/../../form_validation/validation/validation_php.php";
 require_once __DIR__ . "/../../form_validation/validation/template_inputs.php";
+require_once __DIR__ . "/../../form_validation/validation/create_thumbnail.php";
 
 require_once __DIR__ . "/shared_elements.php";
 require_once __DIR__ . "/init.php";
@@ -19,34 +23,40 @@ function custom_validation() {
 }
 
 function validation_pass() {
-    $firstname = $_POST["firstname"] ?? "";
-    $lastname = $_POST["lastname"] ?? "";
-    $email = $_POST["email"] ?? "";
-    $phone = $_POST["phone"] ?? "";
+    $name = htmlspecialchars($_POST["name"] ?? "");
+    $email = htmlspecialchars($_POST["email"] ?? "");
     $pw_hash = custom_password_hash($_POST["pw"] ?? "");
-    $result = add_user($firstname, $lastname, $email, $phone, $pw_hash);
+    $result = add_user($name, $email, $pw_hash);
     if (!$result["success"]) {
         // Insert failed - this is an unexpected error
         echo template_unexpected_error("Adding new user failed.");
         exit(); 
     }
 
+    $image_tmp_file = $GLOBALS["form_validation_temporary_files"]["image"]["tmp_file"] ?? $_FILES["image"]["tmp_file"] ?? null;
+    if ($image_tmp_file) {
+        // Create a thumbnail:
+        $thumbnail_path = __DIR__ . "/../user_data/profile_pictures/" . random_string(10) . ".jpg";
+        $result = create_thumbnail($image_tmp_file, $thumbnail_path, $max_size=128);
+        $GLOBALS["g_logger"]->info("Creating thumbnail", compact("thumbnail_path"));
+        delete_file_if_exists($image_tmp_file);
+    }
+
     // send verification email and tell user about it:
     $user_id = $GLOBALS["g_conn"]->get_connection()->insert_id;
-    $fullname = $firstname . " " . $lastname;
     $token = create_token($user_id, "EMAIL_VERIFICATION", 24);
     $key = urlencode($token["selector"] . $token["validator"]);
 
-    $GLOBALS["g_logger"]->debug("Adding new user", compact("user_id", "key", "fullname", "email"));
+    $GLOBALS["g_logger"]->debug("Adding new user", compact("user_id", "key", "name", "email"));
 
-    send_mail("Email verification link", email_template_verification_email($key), 
-            "Webteam", $email, $fullname, true);
+    // send_mail("Email verification link", email_template_verification_email($key), 
+    //         "Webteam", $email, $name, true);
     echo template_signup_success($email);
     exit(); 
 }
 
 // Initialize the php script:
-init_validation("./form_validation/signup_form.json");
+init_validation("./form_validation/signup_form.json", __DIR__ . "/../../../my_temporary_files/");
 // Validate the form (this does nothing if there is no data in POST):
 validate("custom_validation", "validation_pass");
 
@@ -63,23 +73,14 @@ include_validation_js("../../form_validation/validation/");
             <div class="card bg-light text-dark">
                 <div class="card-body">
                     <h2 class="card-title text-center">Signup</h2>
-                    <form id="signup_form" class="needs-validation" novalidate method="POST">
+                    <form id="signup_form" class="needs-validation" enctype="multipart/form-data" novalidate method="POST">
 
                         <div class="row mt-3">
                             <div class="col-sm-6">
-                                <?php template_input("text", "firstname", "First Name", "First Name", "col-12", "col-12"); ?>
+                                <?php template_input("text", "name", "Name", "Name", "col-12", "col-12"); ?>
                             </div>
-                            <div class="col-sm-6">
-                                <?php template_input("text", "lastname", "Last Name", "Last Name", "col-12", "col-12"); ?>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
                             <div class="col-sm-6">
                                 <?php template_input("email", "email", "Email", "Enter email address", "col-12", "col-12"); ?>
-                            </div>
-                            <div class="col-sm-6">
-                                <?php template_input("text", "phone", "Phone Number", "Phone Number", "col-12", "col-12"); ?>
                             </div>
                         </div>
 
@@ -92,14 +93,21 @@ include_validation_js("../../form_validation/validation/");
                             </div>
                         </div>
 
-                        <!-- Submit -->
-                        <button type="submit" class="btn btn-primary mt-4">Submit</button>
-                    </form>
+                        <div class="mt-3">
+                            <?php template_file_upload("image", "Upload Profile Picture"); ?>
+                        </div>
 
-                    <div class="mt-3">
-                        <?php template_account_recovery("signup_form"); ?>
-                        <a href="front.php">Back to Frontpage</a>
-                    </div>
+                        <div class="row mt-3">
+                            <div class="col-sm-6 order-2 order-sm-1">
+                                <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                                <?php template_account_recovery("signup_form"); ?>
+                                <a href="front.php">Back to Frontpage</a>
+                            </div>
+                            <div class="col-sm-6 order-1 order-sm-2">
+                                <?php template_file_upload_image_preview("image", "Profile Picture Preview", 150); ?>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

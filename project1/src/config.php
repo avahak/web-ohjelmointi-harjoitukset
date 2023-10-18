@@ -32,6 +32,7 @@ function setup_globals_config() {
     }
 
     $GLOBALS["CONFIG"] = $config;
+    $GLOBALS["CONFIG"]["IS_LOCALHOST"] = $is_localhost;
 }
 
 // Set up error message logging

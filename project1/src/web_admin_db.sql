@@ -3,10 +3,9 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    firstname VARCHAR(32) NOT NULL, 
-    lastname VARCHAR(64) NOT NULL, 
+    name VARCHAR(64) NOT NULL, 
     email VARCHAR(128) UNIQUE NOT NULL,
-    phone VARCHAR(16),
+    profile_picture_path VARCHAR(255),
     -- BCrypt always generates 60 characters long but leave space if PASSWORD_DEFAULT changes 
     pw_hash VARCHAR(255) NOT NULL,
     status ENUM('ACTIVE', 'INACTIVE', 'UNVERIFIED') NOT NULL DEFAULT 'UNVERIFIED',

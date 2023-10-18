@@ -33,7 +33,7 @@ function recreate_database() {
 function create_admin_user() {
     $pw = random_string(6);
     
-    add_user("Admin", "", "admin@example.com", null, custom_password_hash($pw));
+    add_user("Admin", "admin@example.com", custom_password_hash($pw));
     change_user_status(user_id_from_email("admin@example.com"), "ACTIVE");
     change_user_role(user_id_from_email("admin@example.com"), "ADMIN");
 
@@ -42,58 +42,36 @@ function create_admin_user() {
         $GLOBALS["CONFIG"][$GLOBALS["CONFIG"]["EMAIL_SENDER"] . "_EMAIL_SENDER"], "Admin", false);
 }
 
+function create_random_users($num) {
+    for ($k = 0; $k < $num; $k++) {
+        $fake_user = new FakeUser();
+        echo "<br>Should add: " . $fake_user->to_string();
+        $name_rand = rand(0, 3);
+        $name = $fake_user->firstname;
+        if ($name_rand == 1) 
+            $name = $fake_user->lastname;
+        if ($name_rand == 2) 
+            $name = $fake_user->firstname . " " . substr($fake_user->lastname, 0, 1);
+        if ($name_rand == 3) 
+            $name = $fake_user->firstname . " " . $fake_user->lastname;
+        add_user($name, $fake_user->email, custom_password_hash($fake_user->password));
+    }
+}
+
 recreate_database();
+echo "<br>Created database.";
 
 // Reason to not include these earlier is that they might assume that the database already exists.
+require_once __DIR__ . "/fake_data.php";
 require_once __DIR__ . "/tokens.php";
 require_once __DIR__ . "/user_operations.php";
 require_once __DIR__ . "/template_pages.php";
 require_once __DIR__ . "/mail/send_mail.php";
 
-echo "Created database.<br>";
 create_admin_user();
-echo "Created admin.<br>";
+echo "<br>Created admin.";
 
-exit();
-
-// add a few test users:
-add_user("Otto", "Mäkelä", "otto@otto.fi", "040-123456", "1234");
-change_user_status(user_id_from_email("admin@neilikka.fi"), "ACTIVE");
-
-// print_r(user_data_from_id($conn, user_id_from_email($conn, "wrong email")));
-// print_r(user_data_from_id($conn, user_id_from_email($conn, "otto@otto.fi")));
-// print_r(user_data_from_id($conn, user_id_from_email($conn, "admin@neilikka.fi")));
-
-// create_token:
-echo "</br>";
-$user_id = user_id_from_email("otto@otto.fi");
-$token1 = create_token($user_id, "EMAIL_VERIFICATION", 24);
-$token2 = create_token($user_id, "REMEMBER_ME", 61*24);
-
-$logger->debug("Created new token.", ["token1" => var_export($token1, true)]);
-
-// verify_token:
-$selector = $token1["selector"];
-$validator = $token1["validator"];
-echo "Selector: " . $selector . "</br>";
-echo "Validator: " . $validator . "</br>";
-
-// $key = $selector . $validator;
-// echo "key: " . $key . "</br>";
-// $key = urlencode($key);
-// echo "key: " . $key . "</br>";
-// $key = urldecode($key);
-// echo "key: " . $key . "</br>";
-
-$key = urlencode($selector . $validator);
-
-$user_data = user_data_from_id($user_id);
-$firstname = $user_data['firstname'];
-$lastname = $user_data['lastname'];
-$email = user_data_from_id($user_id)['email'];
-
-echo "email: $email";
-
-// mailtrap_send("Email verification link", email_template_verification_email($key), "Webteam", $email, $firstname . " " . $lastname, true);
+create_random_users(10);
+echo "<br>Created random users.";
 
 ?>

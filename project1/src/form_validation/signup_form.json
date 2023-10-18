@@ -12,26 +12,22 @@
         "force_equality": "Non-matching value.",
         "min_selected": "%1 has too few selected (minimum is %2).",
         "max_selected": "%1 has too many selected (maximum is %2).",
-        "prevent_recall": "Please re-enter your input."
+        "prevent_recall": "Please re-enter your input.",
+        "max_size_mb": "File is too big (maximum is %2 MB).",
+        "accept_extensions": "Invalid file extension (allowed types: %2).",
+        "verify_is_image": "File needs to be an image.",
+        "store_file": "File %f received."
     },
 
     "VALIDATION_RULES": {
-        "firstname": {
+        "name": {
             "required": true,
-            "min_length": 1,
-            "max_length": 20
-        },
-        "lastname": {
-            "required": true,
-            "min_length": 1,
-            "max_length": 30
+            "min_length": 2,
+            "max_length": 40
         },
         "email": {
             "required": true,
             "pattern": "^[a-zA-Z0-9\\._%+\\-]+@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,}$"
-        },
-        "phone": {
-            "max_length": 20
         },
         "pw": {
             "required": true,
@@ -44,6 +40,14 @@
         "pw2": {
             "force_equality": "pw",
             "prevent_recall": true
+        },
+        "image": {
+            "required": false,
+            "max_size_mb": 2.0,
+            "accept_extensions": ["image/*"],
+            "verify_is_image": true,
+            "image_preview": true,
+            "store_file": true
         }
     },
 
@@ -52,18 +56,12 @@
     },
 
     "VALIDATION_MESSAGES": {
-        "firstname": {
-            "text": "first name"
-        },
-        "lastname": {
-            "text": "last name"
+        "name": {
+            "text": "name"
         },
         "email": {
             "text": "email",
             "pattern": "%1 needs to be a valid email address"
-        },
-        "phone": {
-            "text": "phone number"
         },
         "pw": {
             "text": "password",

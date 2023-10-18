@@ -69,9 +69,9 @@ function user_data_from_email($email) {
 }
 
 // Adds a new user to the database.
-function add_user($firstname, $lastname, $email, $phone, $pw_hash) {
-    $query = "INSERT INTO users (firstname, lastname, email, phone, pw_hash) VALUES (?, ?, ?, ?, ?)";
-    $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $firstname, $lastname, $email, $phone, $pw_hash);
+function add_user($name, $email, $pw_hash) {
+    $query = "INSERT INTO users (name, email, pw_hash) VALUES (?, ?, ?)";
+    $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $name, $email, $pw_hash);
     // should return user_id?
     return $result;
 };

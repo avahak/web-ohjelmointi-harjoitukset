@@ -34,7 +34,8 @@ nav {
 }
 
 #debug-div .nav-link {
-    border-bottom: 1px solid #999 !important;
+    border-right: 1px solid #999 !important;
+    border-bottom: 2px solid #999 !important;
 }
 
 #debug-div .nav-link.active {

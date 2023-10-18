@@ -54,7 +54,7 @@ function include_navbar() {
             </button>
 
             <a href="front.php" class="navbar-brand order-2" style="height:0;">
-                <img src="../images/tba.png" style="width:120px;margin-top:-30px;" alt="TBA">
+                <img src="../resources/images/tba.png" style="width:120px;margin-top:-30px;" alt="TBA">
             </a>
 
             <ul class="navbar-nav order-3 order-md-5">
@@ -105,6 +105,31 @@ function include_navbar() {
     <?php ob_end_flush();
 }
 
+// Creates a div that contains text based on the current Bootstrap breakpoint.
+function include_bootstrap_breakpoint() {
+    ob_start(); ?>
+
+    <div style="position:absolute;bottom:15px;right:10px;font-size:2rem;">
+        <style>
+            .size-box {
+                border-radius: 15px;
+                box-shadow: 0 0 0 2px black;           
+                color: #fff;
+                text-shadow: 0px 0px 4px rgba(0, 0, 0, 1.0);
+                font-family: 'Arial Black', sans-serif;
+            }
+        </style>
+        <div class="size-box p-1 d-block d-sm-none" style="background:#FF5733;">XS</div>
+        <div class="size-box p-1 d-none d-sm-block d-md-none" style="background:#FFA533;">SM</div>
+        <div class="size-box p-1 d-none d-md-block d-lg-none" style="background:#FFC733;">MD</div>
+        <div class="size-box p-1 d-none d-lg-block d-xl-none" style="background:#33B5E5;">LG</div>
+        <div class="size-box p-1 d-none d-xl-block d-xxl-none" style="background:#9AF;">XL</div>
+        <div class="size-box p-1 d-none d-xxl-block" style="background:#BDE;">XXL</div>
+    </div>
+
+    <?php ob_end_flush();
+}
+
 // Adds footer to the page.
 function include_footer() {
     ob_start(); ?>
@@ -122,22 +147,7 @@ function include_footer() {
                 </div>
             </div>
         </div>
-        <div style="position:absolute;bottom:10px;right:10px;font-size:2rem;">
-            <style>
-                .size-box {
-                    border-radius: 15px;
-                    box-shadow: 0 0 0 2px black;           
-                    color: #fff;
-                    text-shadow: 0px 0px 4px rgba(0, 0, 0, 1.0);
-                    font-family: 'Arial Black', sans-serif;
-                }
-            </style>
-            <div class="size-box p-1 d-block d-sm-none" style="background:#FF5733;">XS</div>
-            <div class="size-box p-1 d-none d-sm-block d-md-none" style="background:#FFA533;">SM</div>
-            <div class="size-box p-1 d-none d-md-block d-lg-none" style="background:#FFC733;">MD</div>
-            <div class="size-box p-1 d-none d-lg-block d-xl-none" style="background:#33B5E5;">LG</div>
-            <div class="size-box p-1 d-none d-xl-block" style="background:#9AC7DC;">XL</div>
-        </div>
+        <?php include_bootstrap_breakpoint(); ?>
     </footer>
 
     <?php ob_end_flush();

@@ -1,0 +1,45 @@
+{
+    "FORM_ID": "contact_form",
+
+    "VALIDATION_DEFAULT_MESSAGES": {
+        "required": "%1 is required.",
+        "pattern": "Regex mismatch.",
+        "min_length": "%1 is too short (minimum is %2).",
+        "max_length": "%1 is too long (maximum is %2).",
+        "numeric": "%1 needs to be numeric.",
+        "min": "%1 is too low (minimum is %2).",
+        "max": "%1 is too high (maximum is %2).",
+        "force_equality": "Non-matching value.",
+        "min_selected": "%1 has too few selected (minimum is %2).",
+        "max_selected": "%1 has too many selected (maximum is %2).",
+        "prevent_recall": "Please re-enter your input.",
+        "max_size_mb": "File is too big (maximum is %2 MB).",
+        "accept_extensions": "Invalid file extension (allowed types: %2).",
+        "verify_is_image": "File needs to be an image.",
+        "store_file": "File %f received."
+    },
+
+    "VALIDATION_RULES": {
+        "name": {
+            "required": false
+        },
+        "email": {
+            "required": false,
+            "pattern": "^$|^[a-zA-Z0-9\\._%+\\-]+@[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,}$"
+        },
+        "message": {
+            "required": true,
+            "min_length": 2
+        }
+    },
+
+    "VALIDATION_TRIGGERS": {
+    },
+
+    "VALIDATION_MESSAGES": {
+        "email": {
+            "text": "email",
+            "pattern": "%1 needs to be a valid email address"
+        }
+    }
+}  

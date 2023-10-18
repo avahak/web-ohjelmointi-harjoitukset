@@ -83,6 +83,16 @@ function template_signup_success($email) {
     return template_header("Signup successful") . template_body($content);
 }
 
+// Template to inform the user that Contact Us form was processed and feedback was sent.
+function template_contact_us_success() {
+    $content = <<<HTML
+        <h1>Feedback sent successfully!</h1>
+        <p>Thank you for contacting us. Your message will be read.</p>
+        <a href="front.php" class="btn btn-primary">Back to frontpage</a>
+    HTML;
+    return template_header("Feedback Sent") . template_body($content);
+}
+
 // Template to inform user that a new verification email has been sent.
 function template_resend_verification_email_success($email) {
     $s_email = htmlspecialchars($email);
