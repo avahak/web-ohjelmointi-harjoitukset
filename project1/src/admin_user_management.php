@@ -17,31 +17,28 @@ if ($user_data["role"] != "ADMIN") {
 // Check if javascript is communicating with AJAX:
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $php_input = json_decode(file_get_contents("php://input"), true);
-    if ($php_input && ($php_input["request"] == "get_user_data")) {
+    if (($php_input["request"] ?? "") == "get_user_data") {
         // Write out user data:
         $data = user_data_from_id($php_input["user_id"]);
         if ($data)
             echo json_encode($data);
-        exit();
-    } else if (($_POST["request"] ?? "") == "update_user") {
+    } else if (($php_input["request"] ?? "") == "update_user") {
         // Try to update user and write info on success/failure:
         $parts = [];
         $arguments = [""];
-        foreach ($_POST as $key => $value) {
-            if ($key != "request" && $key != "user_id") {
-                $parts[] = "$key=?";
-                $arguments[] = $value;
-            }
+        foreach ($php_input["new_values"] as $key => $value) {
+            $parts[] = "$key=?";
+            $arguments[] = $value;
         }
         $query = "UPDATE users SET " . implode(", ", $parts) . " WHERE id=?";
+        if (rand(0, 2) == 0)        // Simulates error to test modal-error:
+            $query = "_" . $query;
         $arguments[0] = $query;
-        $arguments[] = $_POST["user_id"];
-        // echo $query . "<br>";
-        // var_export($arguments);
+        $arguments[] = $php_input["user_id"];
         $result = call_user_func_array(array($GLOBALS["g_conn"], 'substitute_and_execute'), $arguments);
         if ($result["success"])
             $result["value"] = "";
-        // echo json_encode($result);
+        echo json_encode($result);
     }
     exit();
 }
@@ -66,24 +63,25 @@ function select_fields() {
 
 // Returns all entries from the specified part of the users table
 function select_users($offset, $limit) {
-    $query = "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?";
+    $order_by = $_GET["order_by"] ?? "id";
+    $query = "SELECT * FROM users ORDER BY $order_by LIMIT ? OFFSET ?";
     $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $limit, $offset);
     if (!$result["success"])
         return [];
     return $result["value"]->fetch_all(MYSQLI_ASSOC);
 }
 
+// Clickable page numbers:
 function create_page_item($x, $current_page, $max_page) {
     $dots = ($x == "dots") ? "dots" : "";
     if (!$dots && ($x < 1 || $x > $max_page))
         return;
     $current = ($x == $current_page) ? "current" : "";
-    $href = ($current) ? "" : "href=\"" . $_SERVER['SCRIPT_NAME'] . "?page=$x\"";
     echo "<li class=\"page-item $dots $current\">";
     if ($dots)
         echo "<span class=\"page-link\">&hellip;</span>";
     else
-        echo "<a class=\"page-link\" $href aria-label=\"Page $x\">$x</a>";
+        echo "<span class=\"page-link\" onclick=\"pageNumberClick(event)\" data-js-page=\"$x\" aria-label=\"Page $x\">$x</span>";
     echo "</li>";
 }
 
@@ -98,10 +96,6 @@ if ((count($fields) == 0) || ($user_count == 0))
 $max_page = (int)ceil($user_count / ENTRIES_PER_PAGE);
 $page = min(max((int)($_GET["page"] ?? 0), 1), $max_page);
 $table = select_users(($page-1)*ENTRIES_PER_PAGE, ENTRIES_PER_PAGE);
-
-$nav_pages = [1, "...", 880, 881, 882, 883, 884, "...", 1249];
-
-// var_export(compact("user_count", "page", "max_page"));
 
 shared_script_start("Admin User Management");
 
@@ -169,6 +163,15 @@ shared_script_start("Admin User Management");
     .modal-data-span {
         word-break: break-all;
     }
+
+    #modal-error {
+        background: #aaa;
+        color: #a00;
+        border: 2px solid #a00;
+        border-radius: 4px;
+        padding: 5px;
+        margin: 5px;
+    }
 </style>
 
 <div class="container mt-3">
@@ -177,14 +180,14 @@ shared_script_start("Admin User Management");
             <ul class="pagination m-0 p-0">
                 <?php if ($max_page > 9) { ?>
                 <li class="page-item me-4">
-                    <form class="form-inline page-link m-0 p-0" method="GET">
+                    <div class="form-inline page-link m-0 p-0" method="GET">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="page" placeholder="Page" autocomplete="off" style="max-width:75px">
+                            <input type="text" class="form-control" id="table-input-page" placeholder="Page" autocomplete="off" style="max-width:75px">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary">Go</button>
+                                <button id="table-button-go" onclick="pageNumberClick(event)" class="btn btn-primary">Go</button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </li>
                 <?php } ?>
                 <?php
@@ -219,7 +222,7 @@ shared_script_start("Admin User Management");
         <thead>
             <tr>
                 <?php foreach ($fields as $field) { ?>
-                <th class="bg-secondary"><?= $field ?></th>
+                <th id="table-header-<?= $field ?>" data-js-field="<?= $field ?>" class="bg-secondary" onclick="tableHeaderClick(event)"><?= $field ?></th>
                 <?php } ?>
                 <th style="background-color: transparent;"></th>
             </tr>
@@ -239,78 +242,75 @@ shared_script_start("Admin User Management");
     <!-- Modal -->
     <div class="modal fade dark-mode" id="user-modal" tabindex="-1" aria-labelledby="user-modal-label" aria-hidden="true">
         <div class="modal-dialog modal-dark">
-            <form method="POST">
-                <div class="modal-content modal-dark-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-light" id="user-modal-label">Modal title</h5>
-                        <button type="button" class="btn-close btn-close-white text-light" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-light flex">
-                        <img id="modal-data-profile_picture" class="rounded float-end d-none" src="">
-                        <input type="hidden" name="request" value="update_user">
-                        <input id="modal-data-id-hidden" type="hidden" name="user_id" value="">
-                        <ul>
-                            <li>
-                                ID: <span class="modal-data-span" id="modal-data-id"></span>
-                            </li>
-                            <li>
-                                Name: <span class="modal-data-span" id="modal-data-name"></span>
-                            </li>
-                            <li>
-                                Email: <span class="modal-data-span" id="modal-data-email"></span>
-                            </li>
-                            <li>
-                                Profile picture: <span class="modal-data-span" id="modal-data-profile_picture_path"></span>
-                            </li>
-                            <li>
-                                Pw hash: <span class="modal-data-span" id="modal-data-pw_hash"></span>
-                            </li>
-                            <li>
-                                <span class="modal-data-span" id="modal-data-status"></span>
-                                <div class="row">
-                                    <div class="col-12 col-sm-4">
-                                        <label class="form-label">Status:</label>
-                                    </div>
-                                    <div class="col-12 col-sm-8">
-                                        <select id="modal-data-status-select" class="form-select selectpicker" name="status">
-                                            <?php 
-                                            foreach ($status_options as $key => $value) {
-                                                $s_key = htmlspecialchars($key);
-                                                $s_value = htmlspecialchars($value);
-                                                echo "<option value='" . $s_value . "'>" . $s_value . "</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="modal-data-span" id="modal-data-role"></span>
-                                <div class="row">
-                                    <div class="col-12 col-sm-4">
-                                        <label class="form-label">Role:</label>
-                                    </div>
-                                    <div class="col-12 col-sm-8">
-                                        <select id="modal-data-role-select" class="form-select selectpicker" name="role">
-                                            <?php 
-                                            foreach ($role_options as $key => $value) {
-                                                $s_key = htmlspecialchars($key);
-                                                $s_value = htmlspecialchars($value);
-                                                echo "<option value='" . $s_value . "'>" . $s_value . "</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="modal-footer modal-dark-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <input type="submit" value="Save" class="btn btn-primary"></button>
-                    </div>
+            <div class="modal-content modal-dark-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-light" id="user-modal-label">User Information</h5>
+                    <button type="button" class="btn-close btn-close-white text-light" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </form>
+                <div class="modal-body text-light flex">
+                    <img id="modal-data-profile_picture" class="rounded float-end d-none" src="">
+                    <ul>
+                        <li>
+                            ID: <span class="modal-data-span" id="modal-data-id"></span>
+                        </li>
+                        <li>
+                            Name: <span class="modal-data-span" id="modal-data-name"></span>
+                        </li>
+                        <li>
+                            Email: <span class="modal-data-span" id="modal-data-email"></span>
+                        </li>
+                        <li>
+                            Profile picture: <span class="modal-data-span" id="modal-data-profile_picture_path"></span>
+                        </li>
+                        <li>
+                            Pw hash: <span class="modal-data-span" id="modal-data-pw_hash"></span>
+                        </li>
+                        <li class="my-1">
+                            <!-- <span class="modal-data-span" id="modal-data-status"></span> -->
+                            <div class="row">
+                                <div class="col-12 col-sm-4">
+                                    <label class="form-label">Status:</label>
+                                </div>
+                                <div class="col-12 col-sm-8">
+                                    <select id="modal-select-status" class="form-select selectpicker" name="status">
+                                        <?php 
+                                        foreach ($status_options as $key => $value) {
+                                            $s_key = htmlspecialchars($key);
+                                            $s_value = htmlspecialchars($value);
+                                            echo "<option value='" . $s_value . "'>" . $s_value . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="my-1">
+                            <!-- <span class="modal-data-span" id="modal-data-role"></span> -->
+                            <div class="row">
+                                <div class="col-12 col-sm-4">
+                                    <label class="form-label">Role:</label>
+                                </div>
+                                <div class="col-12 col-sm-8">
+                                    <select id="modal-select-role" class="form-select selectpicker" name="role">
+                                        <?php 
+                                        foreach ($role_options as $key => $value) {
+                                            $s_key = htmlspecialchars($key);
+                                            $s_value = htmlspecialchars($value);
+                                            echo "<option value='" . $s_value . "'>" . $s_value . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div id="modal-error" class="d-none"></div>
+                </div>
+                <div class="modal-footer modal-dark-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="modal-button-save" type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -318,14 +318,95 @@ shared_script_start("Admin User Management");
 
 <script>
 
+let jsGlobals = {};
+
+// Called when save button is pressed in modal:
+function updateUser() {
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+    });
+    const postData = {
+        request: "update_user",
+        user_id: jsGlobals.id,
+        new_values: {
+            status: document.getElementById("modal-select-status").value,
+            role: document.getElementById("modal-select-role").value,
+        },
+    };
+    const currentURL = window.location.origin + window.location.pathname;
+    const requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(postData),
+    };
+    fetch(currentURL, requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log(result)
+            if (result["success"] == true) {
+                const newURL = currentURL + window.location.search;
+                window.location.href = newURL;
+            }
+            else 
+                throw new Error('Error operating with the database: ' + result["value"]);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            safeAssign(document.getElementById("modal-error"), error);
+            document.getElementById("modal-error")?.classList.remove("d-none");
+        });
+}
+
 // Javascript version of htmlspecialchars:
 function safeAssign(element, text) {
-    const textNode = document.createTextNode(text);
-    element.innerHTML = "";
-    element.appendChild(textNode);
+    if (element) {
+        const textNode = document.createTextNode(text);
+        element.innerHTML = "";
+        element.appendChild(textNode);
+    }
+}
+
+// Called when a page number is clicked:
+function pageNumberClick(event) {
+    let page = event.target.getAttribute("data-js-page");
+    if (event.target.id == "table-button-go")
+        page = document.getElementById("table-input-page")?.value;
+    const searchParams = new URLSearchParams(window.location.search);
+    const newSearchParams = new URLSearchParams("");
+    newSearchParams.append("page", page);
+    if (searchParams.has("order_by")) 
+        newSearchParams.append("order_by", searchParams.get("order_by"));
+    const newSearch = newSearchParams.toString();
+    const newURL = `${window.location.origin}${window.location.pathname}?${encodeURI(newSearch)}`;
+    window.location.href = newURL;
+}
+
+// Called when a table header is clicked:
+function tableHeaderClick(event) {
+    field = event.target.getAttribute("data-js-field");
+    const searchParams = new URLSearchParams(window.location.search);
+    const newSearchParams = new URLSearchParams("");
+    newSearchParams.append("order_by", field);
+    if (searchParams.has("page")) 
+        newSearchParams.append("page", searchParams.get("page"));
+    const newSearch = newSearchParams.toString();
+    const newURL = `${window.location.origin}${window.location.pathname}?${encodeURI(newSearch)}`;
+    window.location.href = newURL;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Save button:
+    const button = document.getElementById("modal-button-save");
+    button.addEventListener("click", () => {
+        updateUser();
+    });
+
+    // Edit buttons:
     const buttons = document.querySelectorAll("button");
     buttons.forEach((button) => {
         if (button.id.startsWith("button-edit")) {
@@ -338,6 +419,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 user_id: user_id,
             };
             button.addEventListener("click", () => {
+                // Hide error div:
+                document.getElementById("modal-error")?.classList.add("d-none");
+
                 const currentURL = window.location.origin + window.location.pathname;
                 const requestOptions = {
                     method: 'POST',
@@ -354,6 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     .then(data => {
                         // console.log('fetch data: ', data);
                         for (const key in data) {
+                            jsGlobals[key] = data[key];
                             const element = document.getElementById("modal-data-" + key);
                             if (element)
                                 safeAssign(element, data[key]);
@@ -367,7 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                         // Set status and role:
                         ["status", "role"].forEach((field) => {
-                            const selectElement = document.getElementById("modal-data-" + field + "-select");
+                            const selectElement = document.getElementById("modal-select-" + field);
                             for (var i = 0; i < selectElement.options.length; i++) {
                                 if (selectElement.options[i].text === data[field]) {
                                     selectElement.selectedIndex = i;
@@ -375,9 +460,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                 }
                             }
                         });
-                        // Update id hidden field on the modal form:
-                        const element = document.getElementById("modal-data-id-hidden");
-                        element.setAttribute("value", data["id"]);
                     })
                     .catch(error => {
                         console.error('There was a problem with the fetch operation:', error);
