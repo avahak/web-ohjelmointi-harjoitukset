@@ -1,6 +1,10 @@
 <?php
+
+require_once __DIR__ . "/config.php";
+
 echo htmlspecialchars($_SERVER['DOCUMENT_ROOT'] . "/my_temporary_files/");
 echo htmlspecialchars(__DIR__ . "/../../../my_temporary_files/");
+echo ($GLOBALS["CONFIG"]["ALLOW_EMAIL_SEND"] == "true") ? "T" : "F";
 ?>
 
 <!DOCTYPE html>

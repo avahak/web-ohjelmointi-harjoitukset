@@ -11,13 +11,19 @@
 require_once __DIR__ . "/user_operations.php";
 require_once __DIR__ . "/init.php";
 
+define("CHARS", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+
 init();
 
-// creates a random string with $bytes bytes of information
-function random_string($bytes) {
-    // Alternative would be using bin2hex.
-    // Assuming $bytes is divisible by 3, returns string with length: 4/3*$bytes.
-    return base64_encode(random_bytes($bytes));
+// Creates a random string with characters from CHARS with specified length
+function random_string($length) {
+    $s = "";
+    for ($k = 0; $k < $length; $k++)
+        $s .= CHARS[rand(0, strlen(CHARS)-1)];
+        // $s .= mb_substr(CHARS, rand(0, strlen(CHARS)-1), 1);  // like this if multi-byte string
+    return $s;
+    // return base64_encode(random_bytes($bytes));  // Assuming $bytes is divisible by 3, returns string with length: 4/3*$bytes.
+    // return bin2hex(random_bytes($bytes));        // Returns string with length: 2*$bytes.
 }
 
 // Deletes all tokens that have expired.
@@ -52,8 +58,8 @@ function create_token($user_id, $token_type, $duration_hours) {
     remove_expired_tokens();
 
     $stmt = "INSERT INTO tokens (user_id, token_type, selector, validator_hash, expiry) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL ? HOUR))";
-    $selector = random_string(12);      // 16 base64 chars
-    $validator = random_string(48);     // 64 base64 chars
+    $selector = random_string(12);
+    $validator = random_string(48);
     $validator_hash = password_hash($validator, PASSWORD_DEFAULT);
     $result = $GLOBALS["g_conn"]->substitute_and_execute($stmt, $user_id, $token_type, $selector, $validator_hash, $duration_hours);
     if ($result["success"])
@@ -95,6 +101,7 @@ function setup_remember_me($user_id) {
     $key = $token["selector"] . $token["validator"];
     $GLOBALS["g_logger"]->debug("Setting up REMEMBER_ME token.", ["user_id" => $user_id, "key" => $key]);
 
+    unset($_SESSION["INVALIDATE_REMEMBER_ME"]);
     setcookie("remember_me", urlencode($key), time() + 3600*$hours, "", "", false, true);
     return true;
 }
@@ -119,6 +126,14 @@ function create_reset_password_token($user_id) {
     $GLOBALS["g_logger"]->debug("Setting up RESET_PASSWORD token.", ["user_id" => $user_id, "key" => $key]);
 
     return $key;
+}
+
+$is_direct_request = str_ends_with(str_replace('\\', '/', __FILE__), $_SERVER['SCRIPT_NAME']);
+if ($is_direct_request) {
+    echo random_string(5) . "<br>";
+    echo random_string(10) . "<br>";
+    echo random_string(15) . "<br>";
+    echo __DIR__ . "</br";
 }
 
 ?>

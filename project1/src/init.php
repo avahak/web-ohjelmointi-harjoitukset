@@ -24,14 +24,17 @@ function init() {
     set_error_reporting();
 
     if (!isset($GLOBALS["g_conn"]))
-        $GLOBALS["g_conn"] = new SqlConnection("web_admin_db");
+        $GLOBALS["g_conn"] = new SqlConnection("tba_db");
     if (!isset($GLOBALS["g_logger"]))
         $GLOBALS["g_logger"] = new Logger();
 
     if(!session_id())
         session_start();
 
-    if (isset($_COOKIE["remember_me"]) && (!isset($_SESSION["user_id"]))) 
+    if (isset($_SESSION["INVALIDATE_REMEMBER_ME"])) {
+        setcookie("remember_me", "", time() - 3600);
+        unset($_SESSION["INVALIDATE_REMEMBER_ME"]);
+    } else if (isset($_COOKIE["remember_me"]) && (!isset($_SESSION["user_id"]))) 
         authenticate_user(false);
 }
 

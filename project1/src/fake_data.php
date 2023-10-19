@@ -66,6 +66,19 @@ class FakeUser {
         return get_class($this) . "(firstname=" . $this->firstname . ", lastname=" . $this->lastname . ", gender=" . $this->gender . ", birth_year=" . $this->birth_year . ", email=" . $this->email . ", password=" . htmlspecialchars($this->password) . ")";
     }
 
+    // Returns value that user might fill on a form asking for "name".
+    function fill_form_name() {
+        $name_rand = rand(0, 3);
+        $name = $this->firstname;
+        if ($name_rand == 1) 
+            $name = $this->lastname;
+        if ($name_rand == 2) 
+            $name = $this->firstname . " " . substr($this->lastname, 0, 1);
+        if ($name_rand == 3) 
+            $name = $this->firstname . " " . $this->lastname;
+        return $name;
+    }
+
     // Generates a random email local part based on the rule given.
     private function generate_email_local_part($rule) {
         $local_part = "";

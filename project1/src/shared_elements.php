@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/user_operations.php";
 require_once __DIR__ . "/debug_element.php";
 
 // Beginning of the shared script:
@@ -46,7 +47,7 @@ function include_navbar() {
     $active_page = (basename($_SERVER["SCRIPT_NAME"]) ?? ""); 
     ?>
 
-    <nav class="navbar navbar-expand-md navbar-dark p-0">
+    <nav id="top-menu" class="navbar navbar-expand-md navbar-dark p-0">
         <div class="container d-flex px-3 py-1" style="overflow:hidden;">
 
             <button class="navbar-toggler order-1" data-bs-toggle="collapse" data-bs-target="#nav">
@@ -95,6 +96,14 @@ function include_navbar() {
                             echo "<li class=\"nav-item\">";
                             echo "<a href=\"#\" class=\"nav-link\">Confidential</a>";
                             echo "</li>";
+                        }
+                        if (isset($_SESSION["user_id"])) {
+                            $user_data = user_data_from_id($_SESSION["user_id"]);
+                            if ($user_data["role"] == "ADMIN") {
+                                echo "<li class=\"nav-item\">";
+                                echo "<a href=\"admin_user_management.php\" class=\"nav-link\">Users</a>";
+                                echo "</li>";
+                            }
                         }
                     ?>
                 </ul>

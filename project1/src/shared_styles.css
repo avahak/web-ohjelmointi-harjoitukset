@@ -18,7 +18,7 @@ body {
     margin-top: auto; /* Push the footer to the bottom. */
 }
 
-nav {
+#top-menu {
     background-color: #424;
     color: #fff;
     border-bottom: 2px solid #555;
@@ -42,10 +42,6 @@ nav {
     background-color: #777 !important;
     color: #fff !important;
 }
-
-/* #debug-div-nav {
-    min-width: 300px;
-} */
 
 #debug-div {
     /* overflow: hidden;  */

@@ -15,10 +15,10 @@ function create_thumbnail($original_path, $thumbnail_path, $max_size=128) {
     // Calculate the thumbnail dimensions while maintaining the aspect ratio
     if ($o_width > $o_height) {
         $t_width = $max_size;
-        $t_height = ($o_height / $o_width) * $max_size;
+        $t_height = (int)(($o_height / $o_width) * $max_size);
     } else {
         $t_height = $max_size;
-        $t_width = ($o_width / $o_height) * $max_size;
+        $t_width = (int)(($o_width / $o_height) * $max_size);
     }
 
     // Create a blank thumbnail image

@@ -12,7 +12,7 @@ shared_script_start("Profile");
 <div class="container">
     <div class="row d-flex justify-content-center mt-5">
         <div class="col" style="max-width:700px;">
-            <div class="jumbotron bg-light text-dark p-3" style="border-radius: 5px;">
+            <div class="jumbotron bg-light text-dark p-3 flex" style="border-radius: 5px;">
                 <?php
                 $s_user_id = htmlspecialchars($user_data["id"]);
                 $s_name = htmlspecialchars($user_data["name"]);
@@ -20,6 +20,9 @@ shared_script_start("Profile");
                 $s_pw_hash = htmlspecialchars($user_data["pw_hash"]);
                 $s_status = htmlspecialchars($user_data["status"]);
                 $s_role = htmlspecialchars($user_data["role"]);
+                $profile_picture_path = $GLOBALS["CONFIG"]["SITE"] . $user_data["profile_picture_path"];
+                if ($user_data["profile_picture_path"]) 
+                    echo "<img src=\"$profile_picture_path\" alt=\"Profile Picture\" class=\"rounded float-end\">";
                 echo "<h1 class=\"display-4\">Hello, $s_name!</h1>";
                 ?>
                 <p class="lead">Here is what we know about you:</p>
@@ -29,6 +32,7 @@ shared_script_start("Profile");
                 echo "Name: $s_name <br>";
                 echo "Email: $s_email<br>";
                 echo "Password hash: $s_pw_hash<br>";
+                echo "Profile picture path: $profile_picture_path<br>";
                 echo "Status: $s_status<br>";
                 echo "Role: $s_role<br>";
                 ?>

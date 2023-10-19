@@ -69,9 +69,9 @@ function user_data_from_email($email) {
 }
 
 // Adds a new user to the database.
-function add_user($name, $email, $pw_hash) {
-    $query = "INSERT INTO users (name, email, pw_hash) VALUES (?, ?, ?)";
-    $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $name, $email, $pw_hash);
+function add_user($name, $email, $pw_hash, $profile_picture_path=null) {
+    $query = "INSERT INTO users (name, email, pw_hash, profile_picture_path) VALUES (?, ?, ?, ?)";
+    $result = $GLOBALS["g_conn"]->substitute_and_execute($query, $name, $email, $pw_hash, $profile_picture_path);
     // should return user_id?
     return $result;
 };
@@ -104,12 +104,11 @@ function authenticate_user($redirect=false) {
         $validator = substr($key, 16);
         $user_id = verify_token($selector, $validator, "REMEMBER_ME", false);
         if ($user_id) {
-            $user_data = user_data_from_id($user_id);
             $_SESSION["user_id"] = $user_id;
             return $user_id;
         }
-        // remember_me cookie verification failed - remove the cookie:
-        setcookie("remember_me", "", time() - 3600);
+        // remember_me cookie verification failed - remove the cookie on next init:
+        $_SESSION["INVALIDATE_REMEMBER_ME"] = true;
     }
 
     if ($redirect) {
@@ -127,14 +126,11 @@ function authenticate_user($redirect=false) {
 // Logs the user out:
 function logout() {
     $user_id = authenticate_user(false);
-    // using session_unset() takes immediate effect, unlike session_destroy() alone
+    // Using session_unset() takes immediate effect, unlike session_destroy() alone
     session_unset();
-    session_destroy();
-
     if ($user_id)
         remove_tokens($user_id, "REMEMBER_ME");
-
-    setcookie("remember_me", "", time() - 3600);
+    $_SESSION["INVALIDATE_REMEMBER_ME"] = true;
 }
 
 ?>
