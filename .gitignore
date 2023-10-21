@@ -34,6 +34,9 @@
 !package.json
 !.gitignore
 
+!design.php
+!design.js
+
 /**/*.txt
 /**/*.log
 /project1/user_data/**
