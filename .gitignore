@@ -36,5 +36,6 @@
 /**/*.txt
 /**/*.log
 /project1/user_data/**
+node_modules/
 /vendor/
 **/vendor/

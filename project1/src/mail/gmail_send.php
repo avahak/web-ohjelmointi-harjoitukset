@@ -14,6 +14,7 @@
 //    This gives you refresh token.
 // 6) Now that you have Client ID, Client secret, and refresh token, you can send 
 //    mail from gmail 1) with this script.
+// 7) Once got "invalid_grant" fatal error. Had to get new refresh token with 5). Dunno why.
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;

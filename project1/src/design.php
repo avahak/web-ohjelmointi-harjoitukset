@@ -8,16 +8,24 @@ init();
 shared_script_start("Login");
 ?>
 
-<script type="importmap">
+<!-- <script type="importmap">
   {
     "imports": {
       "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
       "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
     }
   }
+</script> -->
+<script type="importmap">
+    {
+        "imports": {
+            "three": "../../node_modules/three/build/three.module.js",
+            "three/addons/": "../../node_modules/three/examples/jsm/"
+        }
+    }
 </script>
 
-<script type="module" src="design.js"></script>
+<script type="module" src="./design.js"></script>
 
 <div class="container">
     Text1..
