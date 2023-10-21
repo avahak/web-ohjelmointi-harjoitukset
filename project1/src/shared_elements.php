@@ -80,10 +80,10 @@ function include_navbar() {
             <div class="collapse navbar-collapse order-4" id="nav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Info</a>
+                        <a href="design.php" class="nav-link">Design</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Contact</a>
+                        <a href="contact.php" class="nav-link">Contact</a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link">Shots</a>

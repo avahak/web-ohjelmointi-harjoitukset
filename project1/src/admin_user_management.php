@@ -124,9 +124,11 @@ shared_script_start("Admin User Management");
     }
     .dark-mode .page-link:hover {
         background-color: #557;
+        cursor: pointer;
     }
     .dark-mode .dots.page-item .page-link:hover {
         background-color: #335;
+        pointer-events: none;
     }
     .dark-mode .page-item.current .page-link {
         background-color: #557;
