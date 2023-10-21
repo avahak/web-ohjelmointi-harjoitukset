@@ -1,5 +1,6 @@
 // Help me work out a problem with using three.js library. I am developing my own website and running it with xampp on localhost in windows. I want to add three.js code to a page on my project. The base directory of my project is "c:/xampp/htdocs/kurssi" and all my .php and .js files are located at "c:/xampp/htdocs/kurssi/project1/src". I ran "npm install three" at the base directory of my project and this created "c:/xampp/htdocs/kurssi/node_modules" with three inside it, just like it should. 
 // The problem came when i try to use three.js in "c:/xampp/htdocs/kurssi/project1/src/design.php" and "design.js" in the same directory. In the design.php file i have `<script type="module" src="./design.js"></script>` and in the design.js file i have `import * as THREE from 'three';`. However, when i run the php script on localhost, the three.js code i have is not working and i get console log `Uncaught TypeError: Failed to resolve module specifier "three". Relative references must start with either "/", "./", or "../".` How can i fix this?
+// solution? https://medium.com/threejs/why-does-three-js-need-import-maps-aca9cbc53ffa
 
 import * as THREE from 'three';
 // import * as THREE from "/kurssi/node_modules/three/build/three.module.js"

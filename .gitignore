@@ -31,6 +31,7 @@
 
 !sql_connect.php
 !index.php
+!package.json
 !.gitignore
 
 /**/*.txt
