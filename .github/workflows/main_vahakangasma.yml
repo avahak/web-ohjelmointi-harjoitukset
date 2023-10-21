@@ -27,9 +27,20 @@ jobs:
         with:
           files: 'project1/composer.json'
 
+      # modified by me
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: cd project1 && composer validate --no-check-publish && composer install --prefer-dist --no-progress
+
+      # added by me
+      # - name: Install Node.js and npm
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14'
+
+      # added by me
+      - name: Install npm dependencies
+        run: npm install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
