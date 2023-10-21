@@ -55,7 +55,6 @@ function create_random_users($num) {
     }
 }
 
-echo "<br>Creating database..";
 recreate_database();
 
 // Reason to not include these earlier is that they might assume that the database already exists.
@@ -63,11 +62,13 @@ require_once __DIR__ . "/fake_data.php";
 require_once __DIR__ . "/user_operations.php";
 require_once __DIR__ . "/mail/send_mail.php";
 
+echo "<br>Database created.";
+
 echo "<br>Creating admin..";
 create_admin_user();
 
 echo "<br>Creating random users..";
-create_random_users(1000);
+create_random_users(500);
 
 echo "<br>Done.";
 
