@@ -58,7 +58,7 @@ function validation_pass() {
 }
 
 // Initialize the php script:
-init_validation("./form_validation/signup_form.json", __DIR__ . "/../../../my_temporary_files/");
+init_validation("./form_validation/signup_form.json", __DIR__ . "/../../my_temporary_files/");
 // Validate the form (this does nothing if there is no data in POST):
 validate("custom_validation", "validation_pass");
 
