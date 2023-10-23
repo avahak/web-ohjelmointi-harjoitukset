@@ -58,7 +58,7 @@ function create_token($user_id, $token_type, $duration_hours) {
     remove_expired_tokens();
 
     $stmt = "INSERT INTO tokens (user_id, token_type, selector, validator_hash, expiry) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL ? HOUR))";
-    $selector = random_string(12);
+    $selector = random_string(16);
     $validator = random_string(48);
     $validator_hash = password_hash($validator, PASSWORD_DEFAULT);
     $result = $GLOBALS["g_conn"]->substitute_and_execute($stmt, $user_id, $token_type, $selector, $validator_hash, $duration_hours);

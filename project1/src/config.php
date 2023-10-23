@@ -75,6 +75,7 @@ if ($is_direct_request) {
     echo "<br>SQL_SERVER: " . $GLOBALS["CONFIG"]["SQL_SERVER"];
     echo "<br>SQL_PORT: " . $GLOBALS["CONFIG"]["SQL_PORT"];
     echo "<br>SITE: " . $GLOBALS["CONFIG"]["SITE"];
+    echo "<br>IS_LOCALHOST: " . $GLOBALS["CONFIG"]["IS_LOCALHOST"];
 }
 
 ?>
