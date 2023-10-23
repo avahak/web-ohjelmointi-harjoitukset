@@ -83,13 +83,13 @@ function include_navbar() {
                         <a href="design.php" class="nav-link">Design</a>
                     </li>
                     <li class="nav-item">
-                        <a href="contact.php" class="nav-link">Contact</a>
-                    </li>
-                    <li class="nav-item">
                         <a href="#" class="nav-link">Shots</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">Other</a>
+                        <a href="contact.php" class="nav-link">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="insights.php" class="nav-link">Insights</a>
                     </li>
                     <?php
                         if (isset($_SESSION["user_id"])) {

@@ -1,0 +1,57 @@
+# Blender MTL File: 'None'
+# Material Count: 5
+
+newmtl Material.bottom.001
+Ns 96.078421
+Ka 1.000000 1.000000 1.000000
+Kd 0.900000 0.900000 0.900000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd images\\table6_uv_textured.png
+
+newmtl Material.cloth.001
+Ns 96.078421
+Ka 1.000000 1.000000 1.000000
+Kd 0.900000 0.900000 0.900000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd images\\cloth1.png
+
+newmtl Material.ext.001
+Ns 96.078421
+Ka 1.000000 1.000000 1.000000
+Kd 0.700000 0.700000 0.700000
+Ks 0.300000 0.300000 0.300000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd images\\table6_uv_textured.png
+
+newmtl Material.pocket_in.001
+Ns 96.078421
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd images\\table6_uv_textured.png
+
+newmtl Material.pocket_out.001
+Ns 96.078421
+Ka 1.000000 1.000000 1.000000
+Kd 0.700000 0.700000 0.700000
+Ks 0.400000 0.400000 0.400000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd images\\table6_uv_textured.png

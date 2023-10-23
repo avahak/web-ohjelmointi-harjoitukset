@@ -24,7 +24,7 @@ function recreate_database() {
 
     // Connect to the database, then load and execute SQL schema statements:
     $conn = new SqlConnection("tba_db");
-    $db_schema = file_get_contents(__DIR__ . '/./tba_db.sql');
+    $db_schema = file_get_contents(__DIR__ . '/tba_db.sql');
     $conn->multi_query($db_schema);
     $conn->get_connection()->close();
 }
@@ -68,7 +68,7 @@ echo "<br>Creating admin..";
 create_admin_user();
 
 echo "<br>Creating random users..";
-create_random_users(500);
+create_random_users(200);
 
 echo "<br>Done.";
 

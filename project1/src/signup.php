@@ -51,8 +51,8 @@ function validation_pass() {
 
     $GLOBALS["g_logger"]->debug("Adding new user", compact("user_id", "key", "name", "email"));
 
-    // send_mail("Email verification link", email_template_verification_email($key), 
-    //         "Webteam", $email, $name, true);
+    send_mail("Email verification link", email_template_verification_email($key), 
+            "Webteam", $email, $name, true);
     echo template_signup_success($email);
     exit(); 
 }

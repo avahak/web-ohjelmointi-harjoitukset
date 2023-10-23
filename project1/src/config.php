@@ -39,7 +39,10 @@ function setup_globals_config() {
 function setup_error_handling($error_log_file) {
     error_reporting(E_ALL & ~E_NOTICE);
     // error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    if ($GLOBALS["CONFIG"]["IS_PRODUCTION_SETTING"])
+        ini_set('display_errors', 0);
+    else 
+        ini_set('display_errors', 1);
     ini_set('log_errors', 1);
     ini_set('error_log', $error_log_file); // Replace with your log file path
 
@@ -68,6 +71,7 @@ setup_error_handling(__DIR__ . "/../../logs/php_errors.log");
 $is_direct_request = str_ends_with(str_replace('\\', '/', __FILE__), $_SERVER['SCRIPT_NAME']);
 if ($is_direct_request) {
     // echo "CONFIG: " . var_export($GLOBALS["CONFIG"], true);
+    echo "<br>IS_PRODUCTION_SETTING: " . $GLOBALS["CONFIG"]["IS_PRODUCTION_SETTING"];
     echo "<br>SQL_SERVER: " . $GLOBALS["CONFIG"]["SQL_SERVER"];
     echo "<br>SQL_PORT: " . $GLOBALS["CONFIG"]["SQL_PORT"];
     echo "<br>SITE: " . $GLOBALS["CONFIG"]["SITE"];
