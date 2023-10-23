@@ -55,7 +55,7 @@ shared_script_start("Opittu");
             </ul>
         </li>
 
-        <li class="mt-3">
+        <!-- <li class="mt-3">
             <p class="m-0 fw-bold text-info">Sähköpostien lähettäminen</p>
             <ul>
                 <li>Mailtrap.io on erinomainen testaukseen mutta rajoitus max 100 testiä kuukaudessa.</li>
@@ -70,7 +70,7 @@ shared_script_start("Opittu");
                     </ul>
                 </li>
             </ul>
-        </li>
+        </li> -->
 
         <li class="mt-3">
             <p class="m-0 fw-bold text-info">Debuggaus</p>
@@ -88,8 +88,8 @@ shared_script_start("Opittu");
             <p class="m-0 fw-bold text-info">Tietokantojen käsittely</p>
             Lisäämällä <a href="https://github.com/avahak/web-ohjelmointi-harjoitukset/blob/main/project1/src/tba_db.sql">SQL-skriptin</a>
             voi välttää phpMyAdmin käytön melkein kokonaan. Tämän voi tehdä luomalla tietokanta-riippumaton 
-            yhteys SQL palvelimelle: <code>new mysqli($server, $username, $pw, null, $port)</code> ja 
-            suorittaa kaikki skriptin kyselyt <code>mysqli::multi_query</code> avulla.
+            yhteys SQL palvelimelle: <code class="text-warning">new mysqli($server, $username, $pw, null, $port)</code> ja 
+            suorittaa kaikki skriptin kyselyt <code class="text-warning">mysqli::multi_query</code> avulla.
         </li>
 
         <li class="mt-3">
